@@ -25,7 +25,8 @@
       "Read(//Users/smileijp/projects/research/high_impact/$BASE/v2/**)",
       "Read(//Users/smileijp/projects/research/high_impact/$BASE/v2/.claude/**)",
       "Bash",
-      "Read"
+      "Read",
+      "Bash(git ls-tree:*)"
     ]
   }
 }
