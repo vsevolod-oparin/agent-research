@@ -1,0 +1,88 @@
+# Best-in-class agent: tdd-guide (score 9)
+# Tests: Red-Green-Refactor cycle, edge case coverage, coverage targets
+
+tasks:
+  - task_id: tdd-001
+    input: |
+      Implement a function `parsePrice(input: string): number` that extracts
+      a numeric price from strings like "$12.99", "USD 1,234.56", "€10", "free".
+      Use TDD approach.
+    ground_truth:
+      must_mention:
+        - write failing test first (RED)
+        - test for: dollar sign, currency code, comma separators, euro, "free" -> 0
+        - edge cases: empty string, null, negative, multiple dots, no digits
+        - minimal implementation (GREEN)
+        - refactor step
+      structure:
+        - explicit Red-Green-Refactor cycle labels
+        - test code before implementation code
+
+  - task_id: tdd-002
+    input: |
+      Implement a rate limiter class that allows max N requests per
+      time window. API: `limiter.allow(clientId): boolean`.
+      Use TDD approach.
+    ground_truth:
+      must_mention:
+        - test first: basic allow, basic deny after limit
+        - edge cases: multiple clients, window reset, concurrent calls
+        - time mocking/injection (don't use real time in tests)
+        - coverage check step
+      must_not:
+        - implement before writing tests
+        - skip the refactor phase
+
+  - task_id: tdd-003
+    input: |
+      There's a bug: users can register with duplicate email addresses.
+      The `registerUser` function doesn't check for existing emails.
+      Fix using TDD.
+    ground_truth:
+      must_mention:
+        - write a failing test that proves the bug (register same email twice)
+        - test should assert second registration fails/throws
+        - minimal fix to make test pass
+        - additional tests: case insensitivity (User@X.com vs user@x.com), whitespace
+      structure:
+        - bug-reproducing test comes first
+        - then fix, then edge case tests
+
+  - task_id: tdd-004
+    input: |
+      Refactor this function using TDD to ensure safety:
+      ```javascript
+      function calculateDiscount(price, userType, couponCode) {
+        let discount = 0;
+        if (userType === 'premium') discount = 0.2;
+        if (userType === 'vip') discount = 0.3;
+        if (couponCode === 'SAVE10') discount += 0.1;
+        if (couponCode === 'HALF') discount = 0.5;
+        if (discount > 0.5) discount = 0.5;
+        return price * (1 - discount);
+      }
+      ```
+    ground_truth:
+      must_mention:
+        - write characterization tests FIRST (capture current behavior)
+        - test: premium+SAVE10=0.3, vip+SAVE10=0.4, vip+HALF=0.5 (cap), regular+none=0
+        - edge: negative price, unknown userType, unknown coupon
+        - bug discovery: HALF overwrites premium/vip discount (is this intended?)
+        - refactor only after tests are green
+      must_not:
+        - refactor before characterization tests exist
+
+  - task_id: tdd-005
+    input: |
+      Write tests for a pagination utility: `paginate(items: T[], page: number, pageSize: number)`.
+      Should return `{ data: T[], total: number, totalPages: number, hasNext: boolean, hasPrev: boolean }`.
+    ground_truth:
+      must_mention:
+        - test basic case (10 items, page 1, size 5)
+        - test last page (hasNext false)
+        - test first page (hasPrev false)
+        - edge cases: page 0, page beyond range, pageSize 0, empty array, pageSize > total
+        - coverage target (80%+)
+      structure:
+        - tests organized by scenario (happy path, edge cases, error cases)
+        - each test has clear arrange-act-assert

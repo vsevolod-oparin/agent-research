@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./.claude/tools/web_search.sh \"research team roles systematic literature review methodology best practices\" \"key roles in academic research workflow research assistant principal investigator\" \"AI-assisted research workflow roles decomposition survey analysis\" --sci -s 10)",
+      "Bash(./.claude/tools/web_search.sh *)",
+      "WebFetch(domain:www.cs.virginia.edu)",
+      "Bash(ls /Users/smileijp/projects/research/high_impact/.claude/agents/*.md)",
+      "Bash(wc:*)",
+      "Bash(ls -la /Users/smileijp/projects/research/high_impact/bench/tasks/*.yaml)",
+      "Bash(BASE=/Users/smileijp/projects/research/high_impact/containers)",
+      "Bash(mkdir -p \"$BASE/bare/.claude/templates\" \"$BASE/bare/.claude/tools\" \"$BASE/bare/tmp\")",
+      "Bash(mkdir -p \"$BASE/v1/.claude/templates\" \"$BASE/v1/.claude/tools\" \"$BASE/v1/.claude/agents\" \"$BASE/v1/tmp\")",
+      "Bash(mkdir -p \"$BASE/v2/.claude/templates\" \"$BASE/v2/.claude/tools\" \"$BASE/v2/.claude/agents\" \"$BASE/v2/tmp\")",
+      "Bash(ROOT=/Users/smileijp/projects/research/high_impact)",
+      "Bash(BASE=$ROOT/containers)",
+      "Bash(__NEW_LINE_0c173b30483202d0__ for:*)",
+      "Bash(do)",
+      "Bash(cp \"$ROOT/.claude/agents/$a\" \"$BASE/v1/.claude/agents/$a\")",
+      "Bash(BASE=/Users/smileijp/projects/research/high_impact/containers __NEW_LINE_55cd730f3a062fca__ echo \"=== BARE ===\" echo \"bench symlink:\")",
+      "Read(//Users/smileijp/projects/research/high_impact/$BASE/bare/**)",
+      "Read(//Users/smileijp/projects/research/high_impact/$BASE/bare/.claude/**)",
+      "Read(//Users/smileijp/projects/research/high_impact/$BASE/v1/**)",
+      "Read(//Users/smileijp/projects/research/high_impact/$BASE/v1/.claude/**)",
+      "Read(//Users/smileijp/projects/research/high_impact/**)",
+      "Read(//Users/smileijp/projects/research/high_impact/$BASE/v2/**)",
+      "Read(//Users/smileijp/projects/research/high_impact/$BASE/v2/.claude/**)",
+      "Bash",
+      "Read"
+    ]
+  }
+}

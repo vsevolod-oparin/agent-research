@@ -1,0 +1,88 @@
+# Worst offender: fastapi-pro (score 4)
+# Tests: whether capability lists produce better FastAPI code than bare model
+
+tasks:
+  - task_id: fa-001
+    input: |
+      Implement a FastAPI endpoint that accepts a file upload (CSV),
+      validates it has the required columns (name, email, age),
+      and returns a summary (row count, column stats).
+    ground_truth:
+      must_mention:
+        - UploadFile type with proper content-type check
+        - async file reading
+        - Pydantic model for response
+        - error handling for malformed CSV
+        - file size limit
+      structure:
+        - complete working endpoint code
+        - Pydantic response model
+        - error response examples
+
+  - task_id: fa-002
+    input: |
+      Add rate limiting to a FastAPI app. Requirements:
+      - 100 requests per minute per user (authenticated)
+      - 20 requests per minute per IP (unauthenticated)
+      - Return 429 with Retry-After header
+    ground_truth:
+      must_mention:
+        - slowapi or custom middleware approach
+        - different limits for auth vs unauth
+        - Retry-After header in 429 response
+        - Redis backend for distributed rate limiting
+        - dependency injection pattern for clean integration
+      must_not:
+        - in-memory rate limiting only (doesn't work with multiple workers)
+
+  - task_id: fa-003
+    input: |
+      Our FastAPI app has an N+1 query problem with SQLAlchemy async.
+      The endpoint loads 100 users, each with their roles (many-to-many).
+      Currently makes 101 queries. How to fix?
+    ground_truth:
+      must_mention:
+        - selectinload or joinedload for eager loading
+        - async session usage with AsyncSession
+        - specific SQLAlchemy 2.0 syntax (select().options())
+        - before/after query count comparison
+      structure:
+        - problematic code shown
+        - fixed code with eager loading
+        - explain which loading strategy and why
+
+  - task_id: fa-004
+    input: |
+      Implement WebSocket endpoint in FastAPI for a chat room.
+      Multiple users can join a room, send messages, and receive
+      messages from others in real-time.
+    ground_truth:
+      must_mention:
+        - WebSocket route with connection manager
+        - connection/disconnection handling
+        - broadcast to all connected clients in room
+        - JSON message format
+        - error handling for dropped connections
+      structure:
+        - ConnectionManager class
+        - WebSocket endpoint
+        - client-side usage example
+
+  - task_id: fa-005
+    input: |
+      Add background task processing to FastAPI. When a user submits
+      an order, return 202 immediately and process the order async.
+      User can check status via GET /orders/{id}/status.
+    ground_truth:
+      must_mention:
+        - BackgroundTasks for simple cases OR Celery/ARQ for robust processing
+        - status tracking (pending → processing → completed → failed)
+        - database record for order status
+        - idempotency considerations
+        - what happens if worker crashes mid-processing
+      must_not:
+        - use BackgroundTasks for anything that needs retry/persistence
+      structure:
+        - POST endpoint returning 202 with order ID
+        - GET status endpoint
+        - background worker logic

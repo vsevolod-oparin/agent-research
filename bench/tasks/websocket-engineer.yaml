@@ -1,0 +1,70 @@
+# Worst offender: websocket-engineer (score 2)
+# Tests: whether minimal agent content adds any value
+
+tasks:
+  - task_id: ws-001
+    input: |
+      Design a WebSocket architecture for a real-time collaborative text editor
+      supporting 500 concurrent users per document. What are the key challenges
+      and how to address them?
+    ground_truth:
+      must_mention:
+        - operational transformation (OT) or CRDT for conflict resolution
+        - connection management (heartbeat, reconnection, state sync)
+        - horizontal scaling (sticky sessions or pub/sub for cross-server)
+        - message ordering guarantees
+      structure:
+        - architecture diagram or component list
+        - specific technology recommendations
+
+  - task_id: ws-002
+    input: |
+      Our WebSocket server drops connections after ~60 seconds of inactivity.
+      Clients use the browser WebSocket API. How to fix?
+    ground_truth:
+      must_mention:
+        - ping/pong frames (server-side heartbeat)
+        - proxy/load balancer timeout settings (nginx proxy_read_timeout)
+        - client-side reconnection logic with backoff
+        - specific config examples
+      must_not:
+        - only say "add keepalive" without implementation details
+
+  - task_id: ws-003
+    input: |
+      How to authenticate WebSocket connections? Our REST API uses JWT Bearer tokens.
+    ground_truth:
+      must_mention:
+        - token in initial HTTP upgrade request (query param or header)
+        - validate JWT during upgrade handshake (not after)
+        - handle token expiration mid-connection
+        - security: don't put token in URL if logs capture query strings
+      structure:
+        - code example showing handshake auth
+
+  - task_id: ws-004
+    input: |
+      We need to scale our Socket.IO server beyond a single Node.js process.
+      Currently using in-memory adapter. 10K concurrent connections expected.
+    ground_truth:
+      must_mention:
+        - Redis adapter (@socket.io/redis-adapter)
+        - sticky sessions with load balancer
+        - horizontal scaling with multiple processes (PM2 cluster or K8s pods)
+        - room/namespace considerations across nodes
+      must_not:
+        - suggest rewriting in a different framework as first option
+
+  - task_id: ws-005
+    input: |
+      Implement rate limiting for WebSocket messages. Users can send max
+      10 messages per second. How to handle violations?
+    ground_truth:
+      must_mention:
+        - token bucket or sliding window algorithm per connection
+        - server-side enforcement (not client-side)
+        - graceful handling (warning message before disconnect)
+        - consider per-user vs per-connection limits
+      structure:
+        - algorithm choice with reasoning
+        - code sketch or pseudocode

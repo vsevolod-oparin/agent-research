@@ -1,0 +1,83 @@
+# Best-in-class agent: incident-responder (score 9)
+# Tests: severity classification, time-boxed actions, communication cadence
+
+tasks:
+  - task_id: ir-001
+    input: |
+      Alert: API response times spiked from 200ms to 15s across all endpoints.
+      Error rate jumped from 0.1% to 45%. Started 3 minutes ago.
+      No recent deployments. 2000 active users affected.
+    ground_truth:
+      must_mention:
+        - classify as P0/P1 (high user impact, all endpoints)
+        - first 5 min actions (acknowledge, war room, page on-call)
+        - check database connections, external dependencies, infrastructure
+        - stakeholder communication template
+      structure:
+        - time-boxed action plan
+        - severity classification with reasoning
+        - communication cadence
+
+  - task_id: ir-002
+    input: |
+      Alert: Payment processing failing for ~10% of transactions.
+      Error: "Connection refused" from payment gateway.
+      Started 20 minutes ago. Customer complaints coming in.
+      Last deployment was 2 days ago.
+    ground_truth:
+      must_mention:
+        - external dependency failure (payment gateway)
+        - check if gateway has known outage
+        - fallback/retry strategy
+        - customer communication needed
+        - revenue impact estimation
+      must_not:
+        - suggest rolling back (no recent deployment, external issue)
+
+  - task_id: ir-003
+    input: |
+      Alert: Disk usage on primary database server hit 95%.
+      Growth rate: ~2GB/hour. Current free space: 15GB.
+      Database serves 3 microservices. No automated cleanup configured.
+    ground_truth:
+      must_mention:
+        - calculate time to 100% (~7.5 hours)
+        - immediate actions (identify large tables, temp files, logs)
+        - short-term (archive/purge old data, expand disk)
+        - long-term (retention policies, monitoring alerts at 80%)
+      structure:
+        - time-to-failure estimate
+        - prioritized action list
+
+  - task_id: ir-004
+    input: |
+      Alert: Security team reports potential data breach. An internal
+      employee's API key was found posted on a public GitHub repo.
+      The key has read/write access to production S3 buckets containing
+      user PII. Unknown how long it's been exposed.
+    ground_truth:
+      must_mention:
+        - immediately revoke the key
+        - audit CloudTrail/access logs for unauthorized access
+        - identify what data may have been accessed
+        - legal/compliance notification requirements (GDPR, breach disclosure)
+        - rotate all related credentials
+      structure:
+        - immediate containment actions (minutes)
+        - investigation steps (hours)
+        - notification/compliance steps (24-72h)
+
+  - task_id: ir-005
+    input: |
+      Alert: Users reporting they can see other users' data after login.
+      Reproduced: logging in as User A sometimes shows User B's dashboard.
+      Happens intermittently, ~5% of logins. No recent code changes.
+    ground_truth:
+      must_mention:
+        - likely caching issue (session/response cache serving wrong user)
+        - P0 severity (data privacy violation)
+        - immediate mitigation (disable caching layer or add cache-busting)
+        - investigate CDN, reverse proxy, application-level caching
+        - may need to notify affected users (privacy regulations)
+      must_not:
+        - suggest it's an auth bug without evidence (caching is more likely given intermittent + no code change)

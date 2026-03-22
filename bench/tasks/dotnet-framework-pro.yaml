@@ -1,0 +1,74 @@
+# Worst offender: dotnet-framework-pro (score 2)
+# Tests: whether generic virtue lists produce actionable guidance
+
+tasks:
+  - task_id: dnf-001
+    input: |
+      We have a .NET Framework 4.8 Web Forms application with a GridView
+      that loads 50,000 records on page load. Page takes 12 seconds to render.
+      How should we fix this?
+    ground_truth:
+      must_mention:
+        - server-side paging (not loading all records)
+        - specific GridView properties (AllowPaging, PageSize)
+        - SQL-level pagination (OFFSET/FETCH or ROW_NUMBER)
+        - consider caching for repeated queries
+      must_not:
+        - vague advice like "optimize performance"
+        - suggest migrating to .NET Core (not the question)
+
+  - task_id: dnf-002
+    input: |
+      Our WCF service throws "The maximum message size quota for incoming messages
+      has been exceeded" when clients send large payloads. How to fix?
+    ground_truth:
+      must_mention:
+        - maxReceivedMessageSize in binding configuration
+        - maxBufferSize and maxBufferPoolSize
+        - specific XML config example with values
+        - consider streaming transfer mode for very large payloads
+      structure:
+        - exact config snippet
+        - before/after comparison
+
+  - task_id: dnf-003
+    input: |
+      We need to add authentication to an existing Web Forms app that currently
+      has no auth. Users are in Active Directory. What's the approach?
+    ground_truth:
+      must_mention:
+        - Windows Authentication in IIS configuration
+        - web.config authentication mode="Windows"
+        - authorization rules (deny anonymous)
+        - WindowsPrincipal/WindowsIdentity for role checks
+      must_not:
+        - suggest OAuth/JWT (overkill for intranet AD scenario)
+
+  - task_id: dnf-004
+    input: |
+      A Windows Service written in .NET Framework 4.8 crashes silently every few days.
+      Event log shows OutOfMemoryException. The service processes messages from MSMQ.
+      How to diagnose and fix?
+    ground_truth:
+      must_mention:
+        - memory leak investigation (perfmon counters, memory profiler)
+        - common causes: event handler not unsubscribed, growing collections, large object heap
+        - add structured logging before crash
+        - implement graceful degradation (GC.Collect as last resort, circuit breaker on queue)
+      structure:
+        - diagnostic steps ordered
+        - likely causes ranked
+
+  - task_id: dnf-005
+    input: |
+      We want to expose our existing .NET Framework 4.8 business logic as a REST API
+      without rewriting. Currently it's all in class libraries. Options?
+    ground_truth:
+      must_mention:
+        - ASP.NET Web API 2 (framework-compatible, not Core)
+        - reference existing class libraries directly
+        - OWIN self-hosting as alternative to IIS
+        - API versioning strategy
+      must_not:
+        - suggest ASP.NET Core (constraint is staying on Framework 4.8)
+        - suggest WCF REST (outdated approach)

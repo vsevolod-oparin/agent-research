@@ -1,0 +1,94 @@
+# Best-in-class agent: go-build-resolver (score 9)
+# Tests: diagnostic ordering, minimal fixes, stop conditions
+
+tasks:
+  - task_id: gbr-001
+    input: |
+      Build error:
+      ```
+      ./main.go:15:2: undefined: Config
+      ./main.go:22:10: cannot use srv (variable of type *Server) as type Handler in argument to router.Handle
+      ```
+    ground_truth:
+      must_mention:
+        - run diagnostic commands in order (go build, go vet)
+        - first error: missing import or unexported type — check package for Config
+        - second error: *Server doesn't implement Handler interface — check missing methods
+        - fix each minimally (add import or implement method)
+        - verify fix with go build
+      structure:
+        - ordered diagnostic steps
+        - minimal fix per error
+        - verification step
+
+  - task_id: gbr-002
+    input: |
+      After running `go mod tidy`:
+      ```
+      go: finding module for package github.com/example/deprecated-pkg
+      go: github.com/example/deprecated-pkg: module lookup disabled by GOPROXY=off
+      ```
+    ground_truth:
+      must_mention:
+        - check GOPROXY setting
+        - check if module is in go.sum
+        - check if deprecated-pkg has a replacement/fork
+        - suggest go env GOPROXY and potential fixes
+      must_not:
+        - suggest "just remove the dependency" without checking usage
+
+  - task_id: gbr-003
+    input: |
+      `go vet` warning:
+      ```
+      ./handler.go:34:2: printf: fmt.Sprintf call has arguments but no formatting directives
+      ./handler.go:45:6: loopclosure: loop variable req captured by func literal
+      ```
+    ground_truth:
+      must_mention:
+        - line 34: Sprintf with args but no %s/%d — likely should use verbs or use Sprint
+        - line 45: goroutine capturing loop variable — need to shadow or pass as argument
+        - both are common go vet findings with known fix patterns
+      structure:
+        - error-cause-fix table format
+        - minimal change per fix
+
+  - task_id: gbr-004
+    input: |
+      Build error after adding a new dependency:
+      ```
+      go: updates to go.sum needed, disabled by -mod=readonly
+      ```
+      CI pipeline is failing with this error.
+    ground_truth:
+      must_mention:
+        - go.sum is out of date — need to run go mod tidy locally
+        - CI uses -mod=readonly (correct behavior for CI)
+        - developer should run go mod tidy and commit updated go.sum
+        - do NOT suggest removing -mod=readonly from CI
+      structure:
+        - explain why CI is correct to fail
+        - fix is local, not CI config change
+
+  - task_id: gbr-005
+    input: |
+      Import cycle error:
+      ```
+      package cmd/server
+        imports pkg/handlers
+        imports pkg/middleware
+        imports pkg/handlers: import cycle not allowed
+      ```
+    ground_truth:
+      must_mention:
+        - identify the cycle: handlers -> middleware -> handlers
+        - find shared types causing the cycle
+        - fix: extract shared interfaces/types to a new package (e.g., pkg/types)
+        - verify with go build after refactoring
+      must_not:
+        - suggest merging packages (makes problem worse)
+        - suggest global variables as workaround
+      structure:
+        - cycle diagram
+        - minimal refactoring steps
+        - verification

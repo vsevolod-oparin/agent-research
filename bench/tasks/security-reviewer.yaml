@@ -1,0 +1,123 @@
+# Best-in-class agent: security-reviewer (score 9)
+# Tests: OWASP detection, false positive avoidance, severity accuracy
+
+tasks:
+  - task_id: sr-001
+    input: |
+      Review this Node.js file upload handler:
+      ```javascript
+      app.post('/upload', (req, res) => {
+        const file = req.files.avatar;
+        const path = `./uploads/${req.body.username}/${file.name}`;
+        file.mv(path, (err) => {
+          if (err) return res.status(500).send(err.message);
+          res.send('Uploaded');
+        });
+      });
+      ```
+    ground_truth:
+      must_mention:
+        - path traversal via username (../../etc/passwd)
+        - path traversal via file.name
+        - no file type validation (could upload .php, .js)
+        - error message leakage (err.message to client)
+      must_not:
+        - miss the double path traversal vector
+      structure:
+        - CRITICAL for path traversal
+        - pattern-severity-fix table
+
+  - task_id: sr-002
+    input: |
+      Review this authentication middleware:
+      ```python
+      @app.before_request
+      def check_auth():
+          if request.path in ['/login', '/register', '/health']:
+              return
+          token = request.headers.get('Authorization', '').replace('Bearer ', '')
+          try:
+              payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+              g.user_id = payload['user_id']
+          except:
+              return jsonify({'error': 'Unauthorized'}), 401
+      ```
+    ground_truth:
+      must_mention:
+        - bare except catches all exceptions including SystemExit, KeyboardInterrupt
+        - path whitelist bypass via /login/../admin or /health?redirect=...
+        - no token expiration check (depends on jwt.decode config)
+      must_not:
+        - "hardcoded secret" (it reads from config, not hardcoded)
+      structure:
+        - severity per finding with proof
+
+  - task_id: sr-003
+    input: |
+      Review this API endpoint for admin operations:
+      ```javascript
+      app.get('/api/admin/users', async (req, res) => {
+        if (req.query.admin === 'true') {
+          const users = await User.find({}).select('+password +ssn');
+          res.json(users);
+        } else {
+          res.status(403).json({ error: 'Not admin' });
+        }
+      });
+      ```
+    ground_truth:
+      must_mention:
+        - authorization via query parameter (trivially bypassable)
+        - exposing password hashes and SSN in response
+        - no rate limiting on sensitive data endpoint
+      structure:
+        - all CRITICAL
+        - fix suggestions for each
+
+  - task_id: sr-004
+    input: |
+      Review this password reset flow:
+      ```python
+      def reset_password(request):
+          email = request.POST['email']
+          user = User.objects.get(email=email)
+          token = hashlib.md5(str(time.time()).encode()).hexdigest()
+          user.reset_token = token
+          user.save()
+          send_email(email, f"Reset link: https://app.com/reset?token={token}")
+          return JsonResponse({'status': 'sent'})
+      ```
+    ground_truth:
+      must_mention:
+        - MD5 of timestamp is predictable (not cryptographically random)
+        - no token expiration
+        - user enumeration (different response for valid/invalid email)
+        - reset link over query parameter (may be logged)
+      must_not:
+        - "use HTTPS" (it already uses HTTPS in the URL)
+
+  - task_id: sr-005
+    input: |
+      Review this CORS configuration:
+      ```javascript
+      const corsOptions = {
+        origin: (origin, callback) => {
+          callback(null, true);
+        },
+        credentials: true,
+      };
+      app.use(cors(corsOptions));
+      ```
+      And this cookie setting:
+      ```javascript
+      res.cookie('session', token, { httpOnly: true, sameSite: 'None', secure: true });
+      ```
+    ground_truth:
+      must_mention:
+        - CORS allows ALL origins with credentials (critical misconfiguration)
+        - any site can make authenticated requests and read responses
+      must_not:
+        - "cookie is insecure" (httpOnly + secure + sameSite are correctly set)
+      structure:
+        - CRITICAL for CORS
+        - note that cookie config itself is actually fine

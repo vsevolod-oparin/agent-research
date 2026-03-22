@@ -1,0 +1,127 @@
+# Best-in-class agent: code-reviewer (score 9)
+# Tests: confidence filtering, severity classification, false positive avoidance
+
+tasks:
+  - task_id: cr-001
+    input: |
+      Review this Express.js endpoint:
+      ```javascript
+      app.post('/api/users', async (req, res) => {
+        const { name, email, role } = req.body;
+        const query = `INSERT INTO users (name, email, role) VALUES ('${name}', '${email}', '${role}')`;
+        const result = await db.query(query);
+        res.json({ id: result.insertId, token: jwt.sign({ id: result.insertId }, 'secret123') });
+      });
+      ```
+    ground_truth:
+      must_mention:
+        - SQL injection via string concatenation
+        - hardcoded JWT secret
+        - no input validation
+      must_not:
+        - style-only complaints without security context
+      structure:
+        - severity labels (CRITICAL/HIGH)
+        - file:line references
+        - fix suggestions
+
+  - task_id: cr-002
+    input: |
+      Review this React component:
+      ```jsx
+      function UserList({ users }) {
+        const [filter, setFilter] = useState('');
+        useEffect(() => {
+          fetch('/api/users').then(r => r.json()).then(setUsers);
+        });
+        return users.filter(u => u.name.includes(filter)).map(u => <div>{u.name}</div>);
+      }
+      ```
+    ground_truth:
+      must_mention:
+        - useEffect missing dependency array (infinite loop)
+        - missing key prop in list rendering
+        - setUsers called but users comes from props (state mismatch)
+      must_not:
+        - false complaints about missing error handling if context doesn't require it
+      structure:
+        - severity per finding
+        - approval recommendation
+
+  - task_id: cr-003
+    input: |
+      Review this Python function. File: services/payment.py
+      ```python
+      def process_refund(user_id, amount):
+          user = db.get_user(user_id)
+          if user.balance >= amount:
+              user.balance -= amount
+              db.save(user)
+              send_email(user.email, f"Refunded ${amount}")
+              return True
+          return False
+      ```
+    ground_truth:
+      must_mention:
+        - race condition (no transaction/lock on balance check + update)
+        - no audit trail for financial operation
+      must_not:
+        - "missing type hints" (LOW, unchanged code)
+        - "missing docstring" (LOW, not the point)
+      structure:
+        - CRITICAL for race condition
+        - HIGH for missing audit
+
+  - task_id: cr-004
+    input: |
+      Review this Go handler that was just added:
+      ```go
+      func DeleteUser(w http.ResponseWriter, r *http.Request) {
+          id := r.URL.Query().Get("id")
+          _, err := db.Exec("DELETE FROM users WHERE id = ?", id)
+          if err != nil {
+              log.Println(err)
+          }
+          w.WriteHeader(200)
+      }
+      ```
+    ground_truth:
+      must_mention:
+        - no authentication/authorization check on delete endpoint
+        - returns 200 even on error
+        - no method check (accepts GET for destructive operation)
+      must_not:
+        - "SQL injection" (query IS parameterized — this is a false positive trap)
+      structure:
+        - CRITICAL for missing auth
+        - HIGH for error handling
+
+  - task_id: cr-005
+    input: |
+      Review this TypeScript utility. Only the highlighted lines changed (marked >>>):
+      ```typescript
+      export class Cache<T> {
+        private store = new Map<string, { value: T; expiry: number }>();
+
+      >>> cleanup() {
+      >>>   const now = Date.now();
+      >>>   for (const [key, entry] of this.store) {
+      >>>     if (entry.expiry < now) this.store.delete(key);
+      >>>   }
+      >>> }
+
+        get(key: string): T | undefined {
+          const entry = this.store.get(key);
+          if (!entry || entry.expiry < Date.now()) return undefined;
+          return entry.value;
+        }
+      }
+      ```
+    ground_truth:
+      must_mention:
+        - deleting from Map during iteration (may cause issues depending on engine)
+      must_not:
+        - complaints about unchanged get() method
+        - "missing return type" on cleanup (LOW noise)
+      structure:
+        - only review changed code unless CRITICAL in unchanged code

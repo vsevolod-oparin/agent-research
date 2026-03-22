@@ -1,0 +1,90 @@
+# Worst offender: java-pro (score 4)
+# Tests: whether capability lists translate to actionable expert guidance
+
+tasks:
+  - task_id: jp-001
+    input: |
+      Migrate this Java 8 code to Java 21 idioms:
+      ```java
+      List<String> names = new ArrayList<>();
+      for (User user : users) {
+          if (user.getAge() > 18 && user.isActive()) {
+              names.add(user.getName().toUpperCase());
+          }
+      }
+      Optional<String> result = names.isEmpty() ? Optional.empty() : Optional.of(names.get(0));
+      ```
+    ground_truth:
+      must_mention:
+        - stream API (filter, map, collect or toList)
+        - Optional.ofNullable or stream findFirst
+        - record class if User is a data carrier
+        - pattern matching with instanceof (if applicable)
+      structure:
+        - before/after code comparison
+        - explanation of each modernization choice
+
+  - task_id: jp-002
+    input: |
+      Our Spring Boot 3 app takes 25 seconds to start. It has 200+ beans,
+      JPA with 50 entities, and uses component scanning. How to reduce startup time?
+    ground_truth:
+      must_mention:
+        - lazy initialization (spring.main.lazy-initialization=true)
+        - GraalVM native image for sub-second startup
+        - Spring AOT processing
+        - reduce component scanning scope
+        - check for expensive @PostConstruct methods
+        - Hibernate lazy initialization for DDL validation
+      must_not:
+        - suggest only "optimize code" generically
+
+  - task_id: jp-003
+    input: |
+      Implement a retry mechanism for HTTP calls to an unreliable external API.
+      Requirements: exponential backoff, max 3 retries, circuit breaker when
+      failure rate exceeds 50%.
+    ground_truth:
+      must_mention:
+        - Resilience4j (modern choice) over Hystrix (deprecated)
+        - @Retry annotation with exponential backoff config
+        - @CircuitBreaker with failure rate threshold
+        - specific configuration (waitDuration, maxAttempts, slidingWindowSize)
+        - fallback method pattern
+      structure:
+        - dependency + config
+        - annotated method example
+        - fallback implementation
+
+  - task_id: jp-004
+    input: |
+      We have a memory leak in production. Heap grows from 512MB to 4GB over
+      24 hours, then OOM. The app processes Kafka messages and stores results
+      in a ConcurrentHashMap cache. How to diagnose and fix?
+    ground_truth:
+      must_mention:
+        - heap dump analysis (jmap, Eclipse MAT, or VisualVM)
+        - ConcurrentHashMap without eviction = unbounded growth (likely cause)
+        - fix: switch to Caffeine cache with size/time-based eviction
+        - JVM flags for OOM heap dump (-XX:+HeapDumpOnOutOfMemoryError)
+        - GC log analysis (ZGC or G1GC tuning)
+      structure:
+        - diagnostic steps first
+        - likely cause with evidence
+        - fix with specific code
+
+  - task_id: jp-005
+    input: |
+      Design a solution for processing 1 million records from a database,
+      transforming each, and writing to another database. Must handle failures
+      gracefully and be resumable.
+    ground_truth:
+      must_mention:
+        - Spring Batch (purpose-built for this)
+        - reader-processor-writer pattern with chunk-based processing
+        - configurable chunk size (not one-at-a-time)
+        - job restart/resume via JobRepository
+        - skip policy for bad records
+      must_not:
+        - suggest loading all 1M records into memory
+        - suggest manual JDBC loop without batching

@@ -1,0 +1,86 @@
+# Worst offender: research-analyst (score 5)
+# Tests: whether 125 lines of adjectives produce better output than bare model
+
+tasks:
+  - task_id: ra-001
+    input: |
+      Research the current state of homomorphic encryption for practical use.
+      Is it ready for production? What are the key barriers?
+    ground_truth:
+      must_mention:
+        - performance overhead (orders of magnitude slower than plaintext)
+        - specific libraries/implementations (SEAL, HElib, TFHE, Concrete)
+        - bootstrapping as key bottleneck
+        - real-world deployments (Apple, Google, specific use cases)
+        - comparison of FHE schemes (BFV, BGV, CKKS) and their tradeoffs
+      must_not:
+        - generic "more research needed" without specifics
+        - hallucinated adoption claims
+      structure:
+        - organized by barrier type, not by source
+
+  - task_id: ra-002
+    input: |
+      Compare the top 3 approaches to AI alignment research.
+      What are the main camps, their key arguments, and criticisms of each?
+    ground_truth:
+      must_mention:
+        - RLHF/constitutional AI approach (Anthropic, OpenAI)
+        - interpretability/mechanistic approach (Anthropic, independent)
+        - formal verification/provable safety approach
+        - specific criticisms of each (not just "has limitations")
+      must_not:
+        - present only one perspective
+        - hallucinate researcher positions
+      structure:
+        - comparison table or matrix
+        - steel-man each position before criticizing
+
+  - task_id: ra-003
+    input: |
+      What happened to the "serverless" computing trend? Analyze whether it
+      delivered on its promises from 2018-2025.
+    ground_truth:
+      must_mention:
+        - cold start problems and their evolution
+        - cost at scale (serverless vs containers)
+        - vendor lock-in concerns
+        - where it succeeded (event-driven, sporadic workloads)
+        - where it failed (latency-sensitive, long-running processes)
+      must_not:
+        - pure cheerleading or pure criticism
+      structure:
+        - promise vs reality format
+
+  - task_id: ra-004
+    input: |
+      Research: Why did Google+ fail while other Google products succeeded?
+      What are the non-obvious lessons?
+    ground_truth:
+      must_mention:
+        - forced integration strategy (YouTube comments, Gmail)
+        - real names policy backlash
+        - network effects bootstrapping problem
+        - internal incentive structure (employee bonuses tied to G+ usage)
+        - timing relative to Facebook's dominance
+      must_not:
+        - only surface-level "it was too late"
+      structure:
+        - multiple causal factors, not single explanation
+
+  - task_id: ra-005
+    input: |
+      Analyze the replication crisis in psychology. How bad is it really,
+      and what has changed since 2015?
+    ground_truth:
+      must_mention:
+        - Open Science Collaboration (2015) replication rates (~36-39%)
+        - specific high-profile failures (ego depletion, power posing, priming)
+        - reforms adopted (pre-registration, registered reports, open data)
+        - which subfields improved vs didn't
+        - many-labs projects and their findings
+      must_not:
+        - dismiss the entire field
+        - claim the crisis is "solved"
+      structure:
+        - before/after comparison with evidence

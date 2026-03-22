@@ -1,0 +1,78 @@
+# Worst offender: full-stack-developer (score 4)
+# Tests: whether generic competency list improves task-specific output
+
+tasks:
+  - task_id: fsd-001
+    input: |
+      Implement user authentication for a React + Express app.
+      Requirements: email/password login, JWT tokens, protected routes.
+      Give me the implementation plan and key code.
+    ground_truth:
+      must_mention:
+        - password hashing (bcrypt, not plain text)
+        - JWT token structure and storage (httpOnly cookie vs localStorage tradeoff)
+        - middleware for protected Express routes
+        - React auth context/provider pattern
+        - refresh token strategy
+      must_not:
+        - store passwords in plain text
+        - put JWT in localStorage without discussing XSS risk
+
+  - task_id: fsd-002
+    input: |
+      Our app has an N+1 query problem. The /api/posts endpoint returns posts
+      with their authors and comments. Each request makes 50+ DB queries.
+      How to fix this with a React frontend and Node.js/PostgreSQL backend?
+    ground_truth:
+      must_mention:
+        - JOIN queries or dataloader pattern on backend
+        - specific SQL example (LEFT JOIN posts, users, comments)
+        - pagination to limit result set
+        - frontend: don't refetch data already in cache
+      must_not:
+        - suggest only frontend caching (problem is server-side)
+
+  - task_id: fsd-003
+    input: |
+      Design the database schema and API for a simple e-commerce cart.
+      Products, users, cart items, orders. PostgreSQL + REST API.
+    ground_truth:
+      must_mention:
+        - normalized tables (products, users, carts, cart_items, orders, order_items)
+        - foreign keys and relationships
+        - cart-to-order conversion logic
+        - inventory check on checkout (race condition awareness)
+        - API endpoints (CRUD for cart, checkout flow)
+      structure:
+        - schema DDL or diagram
+        - API endpoint list with methods
+
+  - task_id: fsd-004
+    input: |
+      Add real-time notifications to an existing React + Express app.
+      Users should see notifications appear without page refresh.
+      What's the simplest reliable approach?
+    ground_truth:
+      must_mention:
+        - Server-Sent Events (SSE) as simplest option (not WebSocket for unidirectional)
+        - EventSource API on frontend
+        - Express SSE implementation pattern
+        - reconnection handling
+        - alternative: polling as even simpler fallback
+      must_not:
+        - jump to WebSocket/Socket.IO for unidirectional notifications (overengineering)
+
+  - task_id: fsd-005
+    input: |
+      Deploy a React + Node.js app to production. Currently runs with
+      `npm start` on a developer laptop. What's the minimal production setup?
+    ground_truth:
+      must_mention:
+        - build React for production (npm run build, serve static files)
+        - Node.js process manager (PM2 or systemd)
+        - reverse proxy (nginx) for static files + API
+        - environment variables for secrets (not hardcoded)
+        - HTTPS (Let's Encrypt / certbot)
+      must_not:
+        - suggest Kubernetes for a simple app (overengineering)
+        - skip HTTPS
