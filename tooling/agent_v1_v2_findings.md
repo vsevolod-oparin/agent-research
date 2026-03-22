@@ -50,8 +50,39 @@ V2 optimized for signal density at the cost of coverage. On Sonnet:
 5. **Avoid long workflow/process sections.** These consume context and produce compliance-over-quality output on Sonnet.
 6. **Test on Sonnet, not Opus.** Agent instructions are invisible at Opus level. Sonnet is the target model.
 
+## V3 Results (2026-03-23)
+
+V3 agents were designed following the principles above: 71 lines avg (vs v1: 106, v2: 153).
+
+### DEFG Eval (D=v1, E=v2, F=bare, G=v3)
+
+| Condition | Grand Mean |
+|-----------|-----------|
+| D (v1) | **4.80** |
+| G (v3) | 4.71 |
+| F (bare) | 4.52 |
+| E (v2) | 4.40 |
+
+**V3 is the closest challenger to v1** (gap: 0.09). V3 ties or beats v1 on 5/12 agents (all implementation tasks). V3's weakness: review/analysis tasks (code-reviewer: -0.43, research-analyst: -0.21 vs v1).
+
+### V3 Diagnosis
+
+- **Implementation agents (fastapi-pro, full-stack, documentation, java): v3 matches v1.** The compact format with anti-patterns works. No rigid templates → Sonnet produces thorough output naturally.
+- **Review agents (code-reviewer, security-reviewer): v3 underperforms v1.** V3 cut too much from v1's detailed checklists (v1 code-reviewer: 122 lines → v3: 75 lines). The checklist items (React patterns, Node patterns, Performance patterns) appear to genuinely help Sonnet on review tasks — they're not filler.
+- **Research agent: v3 underperforms v1 and bare.** V1's adjective lists are useless, but v3's compact format may have cut the wrong things. Bare model (F) tied v1 here.
+
+### V3 Design Refinement for V4
+
+1. **Split strategy by task type:** Implementation agents → keep v3 compact format. Review agents → restore v1-length checklists.
+2. **code-reviewer v3 needs:** full React/Next.js checklist, full Node.js/Backend checklist, full Performance checklist restored from v1. These are domain knowledge Sonnet doesn't reliably produce on its own.
+3. **research-analyst:** Neither v1 (adjective filler) nor v3 (compact) works well. Bare model ties v1. Consider a minimal agent that only adds anti-hallucination rules and source evaluation criteria.
+4. **Keep v3 format for all other agents** — it works.
+
 ## Files
 
-- `bench/eval_def/scoreboard.md` — report-only eval
-- `bench/eval_def_full/scoreboard.md` — full eval with code artifacts
+- `bench/eval_def/scoreboard.md` — report-only eval (D/E/F)
+- `bench/eval_def_full/scoreboard.md` — full eval with code artifacts (D/E/F)
 - `bench/eval_abc/scoreboard.md` — Opus eval (ceiling effect)
+- `bench/defg_eval/scoreboard.md` — full eval with v3 (D/E/F/G)
+- `agents_v3/` — v3 agent files
+- `tooling/agent_v1_v2_findings.md` — this file
