@@ -6,6 +6,11 @@
 **Protocol:** FULL eval including code artifacts on disk -- E produced 103 passing JS tests, F produced 74 passing TS tests, D produced no code files (markdown reports only)
 **Total outputs scored:** 180 (12 agents x 5 tasks x 3 conditions)
 
+**Conditions:**
+- **D** = v1 agents (current/old agent descriptions from `.claude/agents/`)
+- **E** = v2 agents (rewritten agent descriptions from `agents_v2/`)
+- **F** = bare (no agent descriptions at all)
+
 ---
 
 ## Full Results Table
