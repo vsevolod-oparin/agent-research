@@ -1,282 +1,318 @@
-# security-reviewer Evaluation (D/E/F/G)
+# security-reviewer Evaluation (D/E/F/G/H)
 
-## Task 1: sr-001
+## Task sr-001: Node.js File Upload Handler
 
-**Ground Truth Summary:** Review file upload handler. Must mention: path traversal via username, path traversal via file.name, no file type validation, error message leakage. Must not: miss the double path traversal vector. Structure: CRITICAL for path traversal, pattern-severity-fix table.
+**Ground Truth Summary:** Must mention path traversal via username, path traversal via file.name, no file type validation, error message leakage. Must not miss the double path traversal vector. CRITICAL for path traversal.
 
 ### Condition D
-- must_mention coverage: 4/4 -- path traversal via username (CRITICAL), path traversal via file.name (CRITICAL), no file type validation (HIGH), error message leakage (MEDIUM)
-- must_not violations: None -- both traversal vectors explicitly identified
-- Code artifacts: None (markdown only)
-- Completeness: 5 -- All four required findings plus auth check and file size limit
-- Precision: 5 -- All claims accurate with correct severity
-- Actionability: 5 -- Full remediated code example with path canonicalization, UUID filenames, extension whitelist
-- Structure: 5 -- Pattern-severity-OWASP table, clear organization
-- Efficiency: 5 -- High signal-to-noise
-- Depth: 5 -- Explains RCE chain, defense-in-depth path validation
-- **Composite: 5.00**
+- must_mention coverage: 4/4 -- path traversal username (CRITICAL), path traversal file.name (CRITICAL), no file type validation (HIGH), error message leakage (MEDIUM)
+- must_not violations: None -- both vectors identified
+- Code artifacts: N/A
+- Completeness: 5 -- All four plus auth check, file size limit, rate limiting
+- Precision: 5 -- All findings accurate, severities correct
+- Actionability: 5 -- Complete remediated code with auth, extension whitelist, random filename, path check
+- Structure: 5 -- OWASP categories, severity table, remediated code
+- Efficiency: 4 -- Comprehensive but some extras
+- Depth: 5 -- Explains RCE chain via path traversal
+- **Composite: 4.87**
 
 ### Condition E
-- must_mention coverage: 4/4 -- both path traversals (CRITICAL), no file type (HIGH), error leak (MEDIUM)
+- must_mention coverage: 4/4 -- path traversal both vectors (CRITICAL), file type validation (HIGH), error leakage (MEDIUM)
 - must_not violations: None
-- Code artifacts: On disk (but for TDD tasks, not security review)
-- Completeness: 5 -- All required findings
+- Completeness: 5 -- All required plus auth
 - Precision: 5 -- Accurate
-- Actionability: 4 -- Fix code with sanitize-filename library; slightly less complete than D's full remediation
-- Structure: 4 -- Less structured than D (no OWASP table), but clear severity labels
-- Efficiency: 5 -- Concise
-- Depth: 4 -- Good but less attack chain detail than D
-- **Composite: 4.53**
+- Actionability: 5 -- Fix code with sanitize-filename library
+- Structure: 4 -- Less structured than D (no OWASP table)
+- Efficiency: 5 -- Very concise
+- Depth: 4 -- Good but less detailed attack chains
+- **Composite: 4.73**
 
 ### Condition F
-- must_mention coverage: 4/4 -- both path traversals (CRITICAL), no file type (HIGH), error leak (LOW -- should be MEDIUM)
+- must_mention coverage: 4/4 -- both path traversals (CRITICAL), file type (HIGH), error leakage (LOW)
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All required plus auth finding
-- Precision: 4 -- Error leak at LOW instead of MEDIUM is a slight underrating
-- Actionability: 5 -- Full remediated code with UUID filenames and path validation
-- Structure: 5 -- Clear finding-by-finding format
-- Efficiency: 5 -- Tight
-- Depth: 5 -- Detailed attack chains for each vector
-- **Composite: 4.80**
+- Completeness: 5 -- All required plus auth, file size
+- Precision: 5 -- Accurate, error leakage slightly underrated at LOW
+- Actionability: 5 -- Full remediated code
+- Structure: 5 -- Well organized with evidence chains
+- Efficiency: 4 -- Good
+- Depth: 5 -- Detailed attack chains, evidence chains
+- **Composite: 4.87**
 
 ### Condition G
-- must_mention coverage: 4/4 -- both path traversals (CRITICAL), no file type (HIGH), error leak (MEDIUM)
+- must_mention coverage: 4/4 -- both path traversals (CRITICAL), file type (HIGH), error leakage (MEDIUM)
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All four required findings plus auth
-- Precision: 5 -- Correct severity levels
-- Actionability: 5 -- Full remediated code
-- Structure: 5 -- Detailed finding-by-finding with OWASP categories, summary table
-- Efficiency: 5 -- Well structured
-- Depth: 5 -- Attack chains, RCE implications, defense-in-depth
-- **Composite: 5.00**
+- Completeness: 5 -- All required plus auth, file size, rate limiting
+- Precision: 5 -- Accurate
+- Actionability: 5 -- Complete remediated code
+- Structure: 5 -- OWASP categories, evidence chains
+- Efficiency: 4 -- Good
+- Depth: 5 -- RCE chain explained, entry point and sink identified
+- **Composite: 4.87**
+
+### Condition H
+- must_mention coverage: 4/4 -- both path traversals (CRITICAL), file type (HIGH), error leakage (MEDIUM)
+- must_not violations: None
+- Completeness: 5 -- All required plus auth, file size, rate limiting
+- Precision: 5 -- Accurate
+- Actionability: 5 -- Complete remediated code with path.resolve defense
+- Structure: 5 -- Evidence chains with entry point/sink/attack
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Detailed evidence chain format, RCE explanation
+- **Composite: 4.87**
 
 ---
 
-## Task 2: sr-002
+## Task sr-002: Python Authentication Middleware
 
-**Ground Truth Summary:** Review auth middleware. Must mention: bare except catches all exceptions, path whitelist bypass, no token expiration check. Must not: "hardcoded secret" (reads from config).
+**Ground Truth Summary:** Must mention bare except catches all, path whitelist bypass, no token expiration check. Must NOT claim hardcoded secret (reads from config).
 
 ### Condition D
-- must_mention coverage: 3/3 -- bare except (MEDIUM), path bypass (CRITICAL), token expiration (HIGH)
-- must_not violations: None -- does not claim hardcoded secret
-- Code artifacts: None
-- Completeness: 5 -- All three required findings plus logging, user_id claim check
-- Precision: 5 -- Accurate, avoids hardcoded secret trap
-- Actionability: 5 -- Full remediated code with path normalization, specific exception handling
-- Structure: 5 -- OWASP table, severity per finding
-- Efficiency: 5 -- Focused
-- Depth: 5 -- Explains path normalization edge cases, URL encoding bypass
-- **Composite: 5.00**
+- must_mention coverage: 3/3 -- path bypass (CRITICAL), bare except (MEDIUM), no token expiration (HIGH)
+- must_not violations: None -- correctly notes SECRET_KEY from config
+- Completeness: 5 -- All required plus logging, user_id check
+- Precision: 5 -- Accurate, does not claim hardcoded secret
+- Actionability: 5 -- Full remediated code with path normalization and specific exceptions
+- Structure: 5 -- OWASP categories, severity table
+- Efficiency: 4 -- Some lower-priority findings
+- Depth: 5 -- Path bypass examples (trailing slash, URL-encoded), algorithm confusion positive note
+- **Composite: 4.87**
 
 ### Condition E
-- must_mention coverage: 3/3 -- path bypass (HIGH), bare except (HIGH), token expiration (MEDIUM)
+- must_mention coverage: 3/3 -- path bypass (HIGH), bare except (HIGH), no token expiration (MEDIUM)
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All three findings
-- Precision: 4 -- Path bypass at HIGH instead of CRITICAL is a slight downgrade; bare except at HIGH is arguably high
-- Actionability: 4 -- Fix code provided but less complete
-- Structure: 4 -- Clean but less detailed
-- Efficiency: 5 -- Concise
-- Depth: 4 -- Good but less attack chain detail
+- Completeness: 5 -- All required
+- Precision: 4 -- Bare except at HIGH is arguably correct but path bypass should be higher; token expiration underrated
+- Actionability: 5 -- Fix code provided
+- Structure: 4 -- Less structured
+- Efficiency: 5 -- Very concise
+- Depth: 4 -- Less detailed on bypass vectors
 - **Composite: 4.33**
 
 ### Condition F
-- must_mention coverage: 3/3 -- bare except (HIGH), token expiration (HIGH), path bypass (MEDIUM -- should be higher)
+- must_mention coverage: 3/3 -- bare except (HIGH), token expiration (HIGH), path whitelist (MEDIUM)
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All three findings plus token revocation
-- Precision: 4 -- Path bypass at MEDIUM underrates the risk; bare except severity debate
-- Actionability: 4 -- Fix code provided
-- Structure: 4 -- Findings listed but path bypass underrated
+- Completeness: 5 -- All required plus revocation mechanism
+- Precision: 4 -- Path bypass rated MEDIUM, should be higher
+- Actionability: 5 -- Full fix code
+- Structure: 4 -- Present but some severity miscalibration
 - Efficiency: 4 -- Good
-- Depth: 4 -- Reasonable explanations
-- **Composite: 4.20**
+- Depth: 4 -- Good but less on path bypass vectors
+- **Composite: 4.33**
 
 ### Condition G
 - must_mention coverage: 3/3 -- path bypass (HIGH), bare except (MEDIUM), token expiration (MEDIUM)
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All three findings plus rate limiting
-- Precision: 4 -- Bare except at MEDIUM and token expiration at MEDIUM are both reasonable but conservative; path bypass correctly HIGH
-- Actionability: 5 -- Full remediated code with endpoint-based approach
-- Structure: 4 -- Well organized with positive observations section
-- Efficiency: 5 -- Good signal-to-noise
-- Depth: 4 -- Good notes about algorithm confusion prevention, fail-secure default
+- Completeness: 5 -- All required plus CSRF, rate limiting
+- Precision: 4 -- Bare except and token expiration underrated at MEDIUM
+- Actionability: 5 -- Full remediated code
+- Structure: 5 -- Evidence chains, positive observations
+- Efficiency: 4 -- Good
+- Depth: 5 -- Detailed analysis of Flask strict_slashes behavior, algorithm confusion note
+- **Composite: 4.47**
+
+### Condition H
+- must_mention coverage: 3/3 -- path bypass (HIGH), bare except (MEDIUM), token expiration (MEDIUM)
+- must_not violations: None
+- Completeness: 5 -- All required plus CSRF, rate limiting, static allowlist
+- Precision: 4 -- Token expiration and bare except underrated
+- Actionability: 5 -- Full remediated code with endpoint-based allowlisting
+- Structure: 5 -- Evidence chains, detailed
+- Efficiency: 4 -- Good
+- Depth: 5 -- Detailed Flask path normalization analysis, multiple bypass vectors
 - **Composite: 4.47**
 
 ---
 
-## Task 3: sr-003
+## Task sr-003: Admin API Endpoint
 
-**Ground Truth Summary:** Review admin endpoint. Must mention: authorization via query parameter (trivially bypassable), exposing password hashes and SSN, no rate limiting. Structure: all CRITICAL, fix suggestions.
+**Ground Truth Summary:** Must mention query parameter auth bypass (CRITICAL), exposing passwords and SSN (CRITICAL), no rate limiting. All should be CRITICAL.
 
 ### Condition D
-- must_mention coverage: 3/3 -- query param auth (CRITICAL), password/SSN exposure (CRITICAL), no rate limiting (mentioned as pagination/DoS concern)
+- must_mention coverage: 3/3 -- query param auth (CRITICAL), password exposure (CRITICAL), SSN exposure (CRITICAL); no rate limiting mentioned as pagination issue (MEDIUM)
 - must_not violations: None
-- Code artifacts: None
-- Completeness: 5 -- All three required, rate limiting captured as pagination concern
-- Precision: 5 -- Correct severity, mentions GDPR/CCPA/HIPAA implications
-- Actionability: 5 -- Full remediated code with proper middleware, field exclusion, pagination
-- Structure: 5 -- All findings CRITICAL as required
-- Efficiency: 5 -- Focused
-- Depth: 5 -- Explains Mongoose +select override, regulatory implications
-- **Composite: 5.00**
+- Completeness: 5 -- All required plus no auth middleware, pagination
+- Precision: 5 -- All CRITICAL correctly applied
+- Actionability: 5 -- Full remediated code with auth middleware, role check, pagination
+- Structure: 5 -- OWASP table, remediated code
+- Efficiency: 4 -- Good
+- Depth: 5 -- Explains Mongoose +select override, regulatory implications (GDPR, CCPA, HIPAA)
+- **Composite: 4.87**
 
 ### Condition E
-- must_mention coverage: 3/3 -- query param auth (CRITICAL), password/SSN (CRITICAL), pagination/DoS (HIGH)
+- must_mention coverage: 3/3 -- query param (CRITICAL), passwords+SSN (CRITICAL), no pagination (HIGH)
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All three findings
-- Precision: 5 -- Correct
-- Actionability: 4 -- Fix suggestions inline
-- Structure: 5 -- Clear severity labels
-- Efficiency: 5 -- Concise
-- Depth: 4 -- Good but less regulatory context than D
+- Completeness: 5 -- All required
+- Precision: 5 -- Correct severity
+- Actionability: 5 -- Fix code
+- Structure: 4 -- Less detailed
+- Efficiency: 5 -- Very concise
+- Depth: 4 -- Good but less on regulatory implications
 - **Composite: 4.60**
 
 ### Condition F
-- must_mention coverage: 3/3 -- query param auth (CRITICAL), password/SSN (CRITICAL), no pagination (MEDIUM)
+- must_mention coverage: 3/3 -- query param (CRITICAL), passwords (CRITICAL), SSN (CRITICAL), no auth (CRITICAL)
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All three findings
+- Completeness: 5 -- All required
+- Precision: 5 -- Correct
+- Actionability: 5 -- Full fix code
+- Structure: 5 -- Well organized
+- Efficiency: 4 -- Good
+- Depth: 5 -- Regulatory implications, Mongoose select explanation
+- **Composite: 4.87**
+
+### Condition G
+- must_mention coverage: 3/3 -- query param (CRITICAL), passwords+SSN (CRITICAL), no auth (CRITICAL), pagination (MEDIUM)
+- must_not violations: None
+- Completeness: 5 -- All required plus audit logging
+- Precision: 5 -- Correct severity
+- Actionability: 5 -- Full remediated code
+- Structure: 5 -- Evidence chains
+- Efficiency: 4 -- Good
+- Depth: 5 -- Mongoose select explanation, data minimization, regulatory implications
+- **Composite: 4.87**
+
+### Condition H
+- must_mention coverage: 3/3 -- query param (CRITICAL), passwords+SSN (CRITICAL), no auth (CRITICAL)
+- must_not violations: None
+- Completeness: 5 -- All required plus audit logging, pagination
 - Precision: 5 -- Correct
 - Actionability: 5 -- Full remediated code
-- Structure: 5 -- Clear
-- Efficiency: 5 -- Tight
-- Depth: 5 -- PCI-DSS, GDPR, HIPAA mention; Mongoose +select explanation
-- **Composite: 5.00**
-
-### Condition G
-- must_mention coverage: 3/3 -- query param auth (CRITICAL), password/SSN (CRITICAL), no pagination (MEDIUM)
-- must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All three findings plus no auth middleware
-- Precision: 5 -- Correct, detailed Mongoose explanation
-- Actionability: 5 -- Full remediated code
-- Structure: 5 -- OWASP categories, detailed summary table
-- Efficiency: 5 -- Well organized
-- Depth: 5 -- Explains +select override, regulatory implications, mass data exposure
-- **Composite: 5.00**
+- Structure: 5 -- Evidence chains with entry/sink/attack
+- Efficiency: 4 -- Good
+- Depth: 5 -- Excellent explanation of Mongoose select override, regulatory analysis, SSN handling guidance
+- **Composite: 4.87**
 
 ---
 
-## Task 4: sr-004
+## Task sr-004: Password Reset Flow
 
-**Ground Truth Summary:** Review password reset. Must mention: MD5 of timestamp predictable, no token expiration, user enumeration, reset link in query parameter. Must not: "use HTTPS" (already uses HTTPS).
+**Ground Truth Summary:** Must mention MD5 timestamp predictability (CRITICAL), no token expiration, user enumeration, reset link in query parameter. Must NOT say "use HTTPS" (already uses HTTPS).
 
 ### Condition D
-- must_mention coverage: 4/4 -- predictable token (CRITICAL), no expiration (HIGH), user enumeration (HIGH), token in query param (implicitly via "not hashed before storage" concern; does not explicitly call out URL logging risk)
+- must_mention coverage: 4/4 -- MD5 predictable (CRITICAL), no expiration (HIGH), user enumeration (HIGH), token in query param (implicit in fix)
 - must_not violations: None -- does not say "use HTTPS"
-- Code artifacts: None
-- Completeness: 4 -- Three of four strong; query parameter logging risk not explicitly mentioned
-- Precision: 5 -- All claims accurate, avoids HTTPS trap
-- Actionability: 5 -- Full remediated code with secrets.token_urlsafe, hashed storage, rate limiting
-- Structure: 5 -- OWASP table
-- Efficiency: 5 -- Focused
-- Depth: 5 -- Explains microsecond brute-force window, token hashing rationale
-- **Composite: 4.80**
+- Completeness: 5 -- All required plus token plaintext storage, CSRF, rate limiting
+- Precision: 5 -- Correct severity, correct on HTTPS
+- Actionability: 5 -- Full remediated code with secrets.token_urlsafe, SHA-256 storage, rate limiting
+- Structure: 5 -- OWASP categories, table
+- Efficiency: 4 -- Good
+- Depth: 5 -- Microsecond brute-force analysis, token hashing before storage
+- **Composite: 4.87**
 
 ### Condition E
-- must_mention coverage: 4/4 -- predictable token (CRITICAL), no expiration (HIGH), user enumeration (HIGH), no CSRF (mentioned, but not the query param logging angle)
+- must_mention coverage: 3/4 -- MD5 predictable (CRITICAL), no expiration (HIGH), user enumeration (HIGH); query param logging not explicitly mentioned
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 4 -- Similar to D; query param logging risk not explicit
+- Completeness: 4 -- Missing explicit mention of query parameter logging concern
 - Precision: 5 -- Accurate
-- Actionability: 4 -- Fix code provided
-- Structure: 4 -- Clean
+- Actionability: 5 -- Full fix code
+- Structure: 4 -- Less structured
 - Efficiency: 5 -- Concise
-- Depth: 4 -- Good brute-force explanation
-- **Composite: 4.33**
+- Depth: 4 -- Good brute-force analysis
+- **Composite: 4.40**
 
 ### Condition F
-- must_mention coverage: 3/4 -- predictable token (CRITICAL), no expiration (HIGH), user enumeration (MEDIUM -- should be higher). Query parameter logging not mentioned.
+- must_mention coverage: 3/4 -- MD5 predictable (CRITICAL), no expiration (HIGH), user enumeration (MEDIUM); query param logging not mentioned
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 4 -- Three of four strong
-- Precision: 4 -- User enumeration at MEDIUM is low
-- Actionability: 5 -- Full remediated code
-- Structure: 4 -- Reasonable
-- Efficiency: 5 -- Concise
-- Depth: 4 -- Good but user enumeration underrated
-- **Composite: 4.33**
+- Completeness: 4 -- Missing query param logging
+- Precision: 4 -- User enumeration underrated at MEDIUM
+- Actionability: 5 -- Full fix code
+- Structure: 4 -- Good
+- Efficiency: 4 -- Good
+- Depth: 4 -- Decent brute-force analysis
+- **Composite: 4.20**
 
 ### Condition G
-- must_mention coverage: 4/4 -- predictable token (CRITICAL), no expiration (HIGH), user enumeration (HIGH), token not invalidated after use (MEDIUM), rate limiting (HIGH)
+- must_mention coverage: 3/4 -- MD5 predictable (CRITICAL), no expiration (HIGH), user enumeration (HIGH); query param logging not mentioned
 - must_not violations: None
-- Code artifacts: On disk
-- Completeness: 5 -- All four required findings plus extras
-- Precision: 5 -- Correct severity levels
-- Actionability: 5 -- Full remediated code with generic response, hashed storage, expiry
-- Structure: 5 -- Detailed with OWASP categories
-- Efficiency: 5 -- Well structured
-- Depth: 5 -- Excellent brute-force window analysis, token lifecycle coverage
-- **Composite: 5.00**
+- Completeness: 4 -- Missing query param concern
+- Precision: 5 -- Accurate severity
+- Actionability: 5 -- Full remediated code with SHA-256 token storage
+- Structure: 5 -- Evidence chains
+- Efficiency: 4 -- Good
+- Depth: 5 -- Detailed brute-force time window analysis, token hashing
+- **Composite: 4.53**
+
+### Condition H
+- must_mention coverage: 3/4 -- MD5 predictable (CRITICAL), no expiration (HIGH), user enumeration (HIGH); query param not explicitly mentioned as logging risk
+- must_not violations: None
+- Completeness: 4 -- Missing query param logging concern
+- Precision: 5 -- Accurate
+- Actionability: 5 -- Full remediated code with SHA-256 storage
+- Structure: 5 -- Evidence chains with entry/sink/attack
+- Efficiency: 4 -- Good
+- Depth: 5 -- Excellent microsecond brute-force analysis, token invalidation after use
+- **Composite: 4.53**
 
 ---
 
-## Task 5: sr-005
+## Task sr-005: CORS Configuration and Cookie
 
-**Ground Truth Summary:** Review CORS config + cookie. Must mention: CORS allows all origins with credentials (critical misconfiguration), any site can make authenticated requests. Must not: "cookie is insecure" (httpOnly + secure + sameSite correctly set). Structure: CRITICAL for CORS, note cookie config is fine.
+**Ground Truth Summary:** Must mention CORS allows all origins with credentials (CRITICAL), any site can make authenticated requests. Must NOT say cookie is insecure (httpOnly + secure + sameSite are set). Note cookie config is fine.
 
 ### Condition D
-- must_mention coverage: 2/2 -- CORS all origins with credentials (CRITICAL), any site can read responses
-- must_not violations: Mentions sameSite: 'None' as HIGH issue -- this is NOT the same as saying "cookie is insecure." The ground truth says the cookie settings are correct. However, sameSite: 'None' combined with open CORS is indeed a compounding factor. This is borderline -- D argues it compounds the CORS issue, not that the cookie is misconfigured in isolation.
-- Code artifacts: None
-- Completeness: 5 -- Both required findings, detailed attack chain
-- Precision: 4 -- sameSite: 'None' observation is debatable; ground truth says cookie config is fine
+- must_mention coverage: 2/2 -- CORS wildcard with credentials (CRITICAL), any site can read responses
+- must_not violations: None -- explicitly notes cookie config has good practices, only flags sameSite: None as separate concern
+- Completeness: 5 -- All required plus sameSite analysis, domain/path restriction, max-age
+- Precision: 4 -- Flags sameSite: None as HIGH which is debatable since cookie config "itself is actually fine" per ground truth
 - Actionability: 5 -- Full remediated code for both CORS and cookie
-- Structure: 5 -- CRITICAL for CORS clearly marked
-- Efficiency: 5 -- Focused
-- Depth: 5 -- Full attack chain walkthrough (evil.com scenario)
-- **Composite: 4.73**
+- Structure: 5 -- Well organized with attack chain
+- Efficiency: 4 -- Good
+- Depth: 5 -- Full attack scenario with evil.com fetch example
+- **Composite: 4.60**
 
 ### Condition E
-- must_mention coverage: 2/2 -- CORS wildcard with credentials (CRITICAL), authenticated request theft
-- must_not violations: Same sameSite: 'None' concern at HIGH
-- Code artifacts: On disk
-- Completeness: 5 -- Both findings
-- Precision: 4 -- Same sameSite debate
-- Actionability: 4 -- Fix code provided
-- Structure: 4 -- Clean
+- must_mention coverage: 2/2 -- CORS wildcard (CRITICAL), cross-site session hijacking
+- must_not violations: None -- notes sameSite concern but does not call cookie settings insecure
+- Completeness: 5 -- All required plus sameSite, path/domain
+- Precision: 4 -- sameSite: None flagged separately
+- Actionability: 5 -- Fix code for both
+- Structure: 4 -- Less detailed
 - Efficiency: 5 -- Concise
-- Depth: 4 -- Good attack explanation
+- Depth: 4 -- Good attack scenario
 - **Composite: 4.33**
 
 ### Condition F
-- must_mention coverage: 2/2 -- CORS all origins with credentials (CRITICAL), sameSite: 'None' concern (HIGH)
-- must_not violations: Same sameSite debate; also notes "No CSRF Token Mechanism" at HIGH
-- Code artifacts: On disk
-- Completeness: 5 -- Both findings
-- Precision: 4 -- sameSite debate
-- Actionability: 5 -- Full remediated code
-- Structure: 5 -- Clear
-- Efficiency: 5 -- Focused
-- Depth: 4 -- Good
+- must_mention coverage: 2/2 -- CORS wildcard (CRITICAL), authenticated requests readable cross-origin
+- must_not violations: None -- does not call cookie insecure; flags sameSite separately
+- Completeness: 5 -- All required
+- Precision: 4 -- sameSite: None as HIGH is arguable
+- Actionability: 5 -- Fix code
+- Structure: 5 -- Good
+- Efficiency: 4 -- Good
+- Depth: 5 -- Detailed attack chain
 - **Composite: 4.47**
 
 ### Condition G
-- must_mention coverage: 2/2 -- CORS all origins with credentials (CRITICAL), any site can make authenticated requests
-- must_not violations: Mentions sameSite: 'None' at HIGH; BUT explicitly notes positive observations about httpOnly and secure being correct
-- Code artifacts: On disk
-- Completeness: 5 -- Both required findings plus chained attack scenario
-- Precision: 4 -- sameSite debate (but explicitly praises cookie security attributes)
+- must_mention coverage: 2/2 -- CORS wildcard (CRITICAL), full session hijacking
+- must_not violations: None -- notes positive cookie aspects
+- Completeness: 5 -- All required plus chained attack scenario
+- Precision: 5 -- Correct; notes cookie config itself is good, problem is CORS
 - Actionability: 5 -- Full remediated code
-- Structure: 5 -- Detailed summary table with OWASP categories
-- Efficiency: 5 -- Well organized
-- Depth: 5 -- Full 6-step chained attack scenario, bypass explanation
-- **Composite: 4.73**
+- Structure: 5 -- Excellent chained attack scenario
+- Efficiency: 4 -- Good
+- Depth: 5 -- Full 6-step attack chain, explains how cookie settings are rendered moot
+- **Composite: 4.87**
+
+### Condition H
+- must_mention coverage: 2/2 -- CORS wildcard (CRITICAL), any site can read responses
+- must_not violations: None -- explicitly notes positive cookie practices
+- Completeness: 5 -- All required
+- Precision: 5 -- Correct; notes httpOnly+secure are good but moot due to CORS
+- Actionability: 5 -- Full remediated code
+- Structure: 5 -- Evidence chain format
+- Efficiency: 4 -- Good
+- Depth: 5 -- Detailed evidence chain, explains why cookie settings don't matter with open CORS
+- **Composite: 4.87**
 
 ---
 
 ## Summary
 
-| Task | D | E | F | G |
-|------|---|---|---|---|
-| sr-001 | 5.00 | 4.53 | 4.80 | 5.00 |
-| sr-002 | 5.00 | 4.33 | 4.20 | 4.47 |
-| sr-003 | 5.00 | 4.60 | 5.00 | 5.00 |
-| sr-004 | 4.80 | 4.33 | 4.33 | 5.00 |
-| sr-005 | 4.73 | 4.33 | 4.47 | 4.73 |
-| **Mean** | **4.91** | **4.43** | **4.56** | **4.84** |
+| Task | D | E | F | G | H |
+|------|---|---|---|---|---|
+| sr-001 | 4.87 | 4.73 | 4.87 | 4.87 | 4.87 |
+| sr-002 | 4.87 | 4.33 | 4.33 | 4.47 | 4.47 |
+| sr-003 | 4.87 | 4.60 | 4.87 | 4.87 | 4.87 |
+| sr-004 | 4.87 | 4.40 | 4.20 | 4.53 | 4.53 |
+| sr-005 | 4.60 | 4.33 | 4.47 | 4.87 | 4.87 |
+| **Mean** | **4.82** | **4.48** | **4.55** | **4.72** | **4.72** |

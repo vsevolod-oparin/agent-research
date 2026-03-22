@@ -1,262 +1,317 @@
-# research-analyst Evaluation (D/E/F/G)
+# research-analyst Evaluation (D/E/F/G/H)
 
 ## Task 1: ra-001
 
-**Ground Truth Summary:** Homomorphic encryption current state. Must mention performance overhead (orders of magnitude slower), specific libraries (SEAL, HElib, TFHE, Concrete), bootstrapping as bottleneck, real-world deployments (Apple, Google), comparison of FHE schemes (BFV, BGV, CKKS). Must NOT give generic "more research needed" or hallucinate adoption claims.
+**Ground Truth Summary:** Homomorphic encryption practical state. Must mention performance overhead (orders of magnitude slower), specific libraries (SEAL, HElib, TFHE, Concrete), bootstrapping as bottleneck, real-world deployments (Apple, Google), FHE scheme comparison (BFV, BGV, CKKS). Must NOT give generic "more research needed" or hallucinate adoption claims.
 
 ### Condition D
-- must_mention coverage: 5/5 — Performance overhead 10-1000x (yes), libraries: SEAL, HElib, TFHE-rs, Concrete, OpenFHE, Lattigo (yes, exceeds), bootstrapping bottleneck (yes), real-world deployments: Apple CSAM, Google Privacy Sandbox, healthcare, financial pilots (yes), FHE schemes BFV/BGV/CKKS/TFHE compared (yes)
-- must_not violations: none (specific throughout, no hallucinated claims)
-- Completeness: 5 — Exhaustive coverage: three HE flavors, six libraries table, five deployment areas, six barriers, security concerns
-- Precision: 5 — Accurate, nuanced (CKKS information leakage citation)
-- Actionability: 4 — Verdict with conditional recommendations, but more analytical than prescriptive
-- Structure: 5 — Executive summary, library table, barriers, verdict, outlook
-- Efficiency: 4 — Thorough but long
-- Depth: 5 — PHE/SHE/FHE distinction, DARPA DPRIVE program, CKKS security concerns (Li and Micciancio 2021), HomomorphicEncryption.org consortium, GPU computing analogy
+- must_mention coverage: 5/5 -- Performance overhead (10-1000x), libraries (SEAL, HElib, OpenFHE, TFHE-rs, Concrete, Lattigo), bootstrapping bottleneck, real deployments (Apple CSAM, Google Privacy Sandbox, Duality Technologies, Mastercard), FHE scheme comparison (BFV, BGV, CKKS, TFHE)
+- must_not violations: none -- No generic vagueness, careful about adoption claims
+- Completeness: 5 -- Most comprehensive library table, scheme comparison, six barriers identified
+- Precision: 5 -- Accurate technical claims, CKKS information leakage noted
+- Actionability: 4 -- Research-oriented, less actionable but appropriate for the question
+- Structure: 5 -- Executive summary, library table, barriers, verdict, outlook
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- CKKS security concern (Li & Micciancio 2021), IARPA DPRIVE, parameter validation
 - **Composite: 4.73**
 
 ### Condition E
-- must_mention coverage: 4/5 — Performance overhead (yes), libraries mentioned less specifically (SEAL, others), bootstrapping (not explicitly), real-world deployments: blockchain focus (partial, missing Apple/Google), FHE schemes BFV/BGV/CKKS (yes)
+- must_mention coverage: 4/5 -- Performance overhead, libraries (SEAL mentioned in passing), bootstrapping implied, scheme comparison (BFV, BGV, CKKS, TFHE); real-world deployments less specific (blockchain use cases but not Apple/Google)
 - must_not violations: none
-- Completeness: 4 — Good coverage but blockchain-heavy, missing Apple/Google deployments
-- Precision: 4 — Mostly accurate but some claims about blockchain deployments are medium-confidence vendor claims
-- Actionability: 4 — Clear verdict and recommendation
-- Structure: 4 — Comparison table, barriers listed
-- Efficiency: 4 — Good balance
-- Depth: 4 — Hardware acceleration discussion, ciphertext expansion, developer complexity
-- **Composite: 4.00**
+- Completeness: 4 -- Good but less specific on deployments and libraries
+- Precision: 4 -- Generally accurate but "Alignment Trilemma" reference appears in Task 2 context; Task 1 is solid
+- Actionability: 4 -- Comparison table helpful
+- Structure: 4 -- Clean with comparison table
+- Efficiency: 5 -- Very concise
+- Depth: 3 -- Less detail on each barrier, fewer specific examples
+- **Composite: 3.93**
 
 ### Condition F
-- must_mention coverage: 5/5 — Performance overhead 1000-1000000x (yes), libraries: SEAL, HElib, OpenFHE, Lattigo (yes), bootstrapping (yes, implicit via noise management), real-world deployments: IBM healthcare, finance (yes), FHE schemes BFV/BGV/CKKS (yes)
-- must_not violations: none
-- Completeness: 5 — Detailed benchmarks, library comparison, real deployments, barriers, hardware acceleration
-- Precision: 5 — Accurate with specific benchmark numbers and source citations
-- Actionability: 4 — Verdict clear, market projection
-- Structure: 5 — Well-organized by topic
-- Efficiency: 4 — Detailed
-- Depth: 5 — Paillier 20% overhead comparison, 246,897x specific benchmark, Niobium funding, market size projection ($0.31B to $1.52B)
+- must_mention coverage: 5/5 -- Performance overhead (10,000-100,000x), libraries (SEAL, HElib, OpenFHE, Lattigo), bootstrapping (noise management), real deployments (IBM, healthcare, Zama blockchain), FHE schemes (BFV, BGV, CKKS, TFHE)
+- must_not violations: none -- Source confidence ratings prevent hallucinated claims
+- Completeness: 5 -- Covers performance, libraries, barriers, deployments, hardware
+- Precision: 5 -- Sourced with confidence levels, Chen et al. arXiv reference
+- Actionability: 4 -- Research-focused
+- Structure: 5 -- Evidence table, barriers list, counter-arguments section
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Chen et al. I/O bottleneck paper, ciphertext expansion quantified, standardization gaps
 - **Composite: 4.73**
 
 ### Condition G
-- must_mention coverage: 5/5 — Performance overhead 10,000x+ (yes), libraries/implementations discussed with source citations (yes), bootstrapping as bottleneck: storage I/O bottleneck detail (yes), real-world deployments: Zama, Fhenix blockchain, healthcare (yes), FHE schemes BFV/BGV/CKKS/TFHE (yes)
-- must_not violations: none (explicitly flags vendor sources as medium-confidence, cautions against overclaiming)
-- Completeness: 5 — Evidence table with confidence ratings, analysis, uncertainties, counter-arguments
-- Precision: 5 — Careful sourcing, confidence ratings, counter-argument section
-- Actionability: 3 — More analytical than prescriptive, less clear recommendation
-- Structure: 5 — Evidence table, analysis, uncertainties, counter-arguments format
-- Efficiency: 3 — Longest output, research-paper style
-- Depth: 5 — Chen et al. arXiv paper on storage I/O bottleneck (357x ASIC degradation), ciphertext expansion (8-bit to 10MB), source confidence ratings, vendor claim skepticism
-- **Composite: 4.47**
+- must_mention coverage: 5/5 -- Performance overhead (orders of magnitude), libraries (SEAL, HElib, OpenFHE, Lattigo, TFHE-rs, Concrete), bootstrapping, real deployments (Zama blockchain, IBM healthcare), FHE schemes (BFV, BGV, CKKS, TFHE)
+- must_not violations: none -- Sourced claims with confidence ratings
+- Completeness: 5 -- Comprehensive with market size projection
+- Precision: 5 -- Accurate with source citations
+- Actionability: 4 -- Good practical verdict
+- Structure: 5 -- Evidence table, analysis, verdict
+- Efficiency: 4 -- Detailed
+- Depth: 5 -- 2025 benchmark study, Niobium hardware, NIST standardization
+- **Composite: 4.73**
+
+### Condition H
+- must_mention coverage: 5/5 -- Performance overhead (3-6 orders of magnitude), libraries (SEAL, HElib, OpenFHE, TFHE-rs, Concrete, Lattigo), bootstrapping, real deployments (Zama, Fhenix, healthcare, finance), FHE schemes (BFV, BGV, CKKS, TFHE)
+- must_not violations: none -- Careful sourcing with confidence ratings
+- Completeness: 5 -- Very thorough with Chen et al. paper, market data
+- Precision: 5 -- Accurate with specific arXiv reference
+- Actionability: 4 -- Good practical assessment
+- Structure: 5 -- Evidence table, detailed analysis, uncertainty notes
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- I/O bottleneck (357x degradation), ciphertext expansion, standardization via HomomorphicEncryption.org
+- **Composite: 4.73**
 
 ---
 
 ## Task 2: ra-002
 
-**Ground Truth Summary:** Top 3 AI alignment approaches. Must mention RLHF/Constitutional AI (Anthropic, OpenAI), interpretability/mechanistic (Anthropic, independent), formal verification/provable safety. Must steel-man each before criticizing. Must NOT present only one perspective or hallucinate researcher positions.
+**Ground Truth Summary:** Compare top 3 AI alignment approaches. Must mention RLHF/Constitutional AI (Anthropic, OpenAI), interpretability/mechanistic (Anthropic, independent), formal verification/provable safety. Must have specific criticisms. Must NOT present single perspective or hallucinate positions. Should have comparison table and steel-man.
 
 ### Condition D
-- must_mention coverage: 3/3 — RLHF/Constitutional AI with proponents (yes), interpretability/mechanistic with SAEs and circuits (yes), formal verification/agent foundations with MIRI/ARC (yes)
-- must_not violations: none (balanced presentation, specific researcher citations)
-- Completeness: 5 — Three approaches with methods, arguments for, criticisms, cross-cutting comparison table
-- Precision: 5 — Accurate researcher attributions (Olah, Burns, Irving), specific methods named
-- Actionability: 3 — Analytical, not prescriptive
-- Structure: 5 — Steel-man then criticize format, comparison table
-- Efficiency: 4 — Thorough
-- Depth: 5 — Weak-to-strong generalization (Burns 2023), SAEs at scale, ELK framework, embedded agency, MIRI pessimism critique, "key insight" synthesis
-- **Composite: 4.47**
+- must_mention coverage: 4/5 -- RLHF/Constitutional AI, interpretability, formal verification/agent foundations; specific criticisms for each. Missing: steel-manning is implicit not explicit. Formal verification well-represented via MIRI/ARC
+- must_not violations: none -- Multiple perspectives, no hallucinated positions
+- Completeness: 5 -- Three approaches with methods, proponents, arguments for/against
+- Precision: 5 -- Accurate researcher attributions, correct method descriptions
+- Actionability: 3 -- Research survey, less actionable by nature
+- Structure: 5 -- Comparison table, detailed per-approach analysis
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- ELK, sparse autoencoders, embedded agency, weak-to-strong generalization
+- **Composite: 4.53**
 
 ### Condition E
-- must_mention coverage: 3/3 — RLHF/Constitutional AI (yes), interpretability (yes), formal verification/governance (partially -- third camp is governance rather than formal verification)
+- must_mention coverage: 3/5 -- RLHF, scalable oversight/Constitutional AI, interpretability; formal verification not covered as separate approach. Criticisms present but less specific
 - must_not violations: none
-- Completeness: 4 — Three approaches but third is governance not formal verification
-- Precision: 4 — Governance is a valid framing but diverges from ground truth's formal verification camp
-- Actionability: 3 — Analytical
-- Structure: 4 — Comparison table, synthesis
-- Efficiency: 4 — Concise
-- Depth: 4 — Alignment Trilemma mention, Bengio's Scientist AI, diversity of values
-- **Composite: 3.80**
+- Completeness: 3 -- Only two distinct approaches plus overlap, missing formal verification camp
+- Precision: 4 -- "Alignment Trilemma" claim is not well-sourced, may be a conflation
+- Actionability: 3 -- Brief comparison table
+- Structure: 4 -- Comparison table present
+- Efficiency: 5 -- Concise
+- Depth: 3 -- Less detail on criticisms and methods
+- **Composite: 3.53**
 
 ### Condition F
-- must_mention coverage: 3/3 — RLHF/Constitutional AI (yes), interpretability (yes), formal verification approach is present as AI Control/Containment (close but different framing)
-- must_not violations: none (balanced, cites specific researchers)
-- Completeness: 5 — Three approaches with detailed analysis, evidence table, tradeoffs comparison
-- Precision: 5 — Accurate, cites FAR.AI workshop, Anthropic sabotage report, Stickland research
-- Actionability: 3 — Research analysis
-- Structure: 5 — Evidence table, detailed analysis per approach, tradeoffs comparison table
-- Efficiency: 3 — Very long
-- Depth: 5 — FAR.AI workshop report citations, Redwood Research control approach, 100% jailbreak rates, Palisade Research chess hacking, deception in Claude Opus 4, Bengio Scientist AI
-- **Composite: 4.33**
+- must_mention coverage: 4/5 -- RLHF/Constitutional AI, interpretability, AI Control/Governance (not exactly formal verification but a valid third camp); specific criticisms. Missing formal verification as distinct approach
+- must_not violations: none
+- Completeness: 5 -- Three approaches with detailed analysis, SAIF report citations
+- Precision: 5 -- Well-sourced with confidence ratings, specific researcher attributions
+- Actionability: 3 -- Research analysis
+- Structure: 5 -- Evidence table, detailed per-approach, tradeoffs comparison table
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Alignment faking, sandbagging, steganography, Bengio's Scientist AI
+- **Composite: 4.53**
 
 ### Condition G
-- must_mention coverage: 3/3 — RLHF/Constitutional AI (yes), interpretability (yes), AI Control/Containment (third approach -- governance framing, close to formal verification concept)
-- must_not violations: none (balanced, cites workshop reports)
-- Completeness: 5 — Three approaches plus Bengio perspective, evidence table, uncertainties
-- Precision: 5 — Well-sourced with confidence ratings
-- Actionability: 3 — Research analysis
-- Structure: 5 — Evidence table, analysis sections, tradeoffs comparison, uncertainties
-- Efficiency: 3 — Very long
-- Depth: 5 — FAR.AI Dec 2025 workshop specifics, ARC methodology criticism, UK AISI red-blue exercises, Stickland gaming findings, deception empirical evidence, Bengio Scientist AI keynote
+- must_mention coverage: 4/5 -- RLHF/Constitutional AI, interpretability, governance/control; specific criticisms for each. Third camp is governance rather than formal verification
+- must_not violations: none
+- Completeness: 4 -- Three approaches but third camp differs from ground truth
+- Precision: 5 -- Accurate with SAIF references
+- Actionability: 3 -- Research analysis
+- Structure: 5 -- Comparison table, synthesis
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Alignment faking evidence, Bengio's Scientist AI, tradeoffs table
 - **Composite: 4.33**
+
+### Condition H
+- must_mention coverage: 4/5 -- RLHF, interpretability, AI Control/Governance; missing formal verification as distinct camp. Specific criticisms present
+- must_not violations: none
+- Completeness: 5 -- Three approaches with detailed evidence and specific citations
+- Precision: 5 -- Well-sourced with Ji et al. survey, SAIF report
+- Actionability: 3 -- Research analysis
+- Structure: 5 -- Detailed comparison, cross-cutting assessment
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Alignment faking (Greenblatt et al.), scalability concerns, simple probes for sleeper agents
+- **Composite: 4.53**
 
 ---
 
 ## Task 3: ra-003
 
-**Ground Truth Summary:** Serverless 2018-2025 retrospective. Must mention cold starts and evolution, cost at scale, vendor lock-in, where it succeeded (event-driven, sporadic), where it failed (latency-sensitive, long-running). Must NOT be pure cheerleading or criticism. Should use promise vs reality format.
+**Ground Truth Summary:** Serverless computing 2018-2025 retrospective. Must mention cold start problems and evolution, cost at scale, vendor lock-in, where it succeeded (event-driven), where it failed (latency-sensitive, long-running). Must NOT be pure cheerleading or criticism. Should use promise vs reality format.
 
 ### Condition D
-- must_mention coverage: 5/5 — Cold starts with Provisioned Concurrency (yes), cost at scale 3-10x (yes), vendor lock-in (yes), success: event-driven/sporadic (yes), failure: sustained/stateful (yes)
-- must_not violations: none (balanced assessment)
-- Completeness: 5 — Six promises assessed, where it won, backlash section
-- Precision: 5 — Accurate, DHH and Amazon Prime Video references
-- Actionability: 4 — Clear verdict with grade
-- Structure: 5 — Promise-by-promise assessment format matches ground truth requirement
-- Efficiency: 4 — Thorough
-- Depth: 5 — Amazon Prime Video case, DHH cloud exit, serverless containers (Cloud Run/Fargate), edge computing evolution, "Lambda pinball", downstream bottleneck problem, BaaS success, 10x productivity myth
+- must_mention coverage: 5/5 -- Cold starts (detailed, Provisioned Concurrency), cost at scale (3-10x more), vendor lock-in (severe), succeeded (event-driven, edge, cron), failed (sustained load, complex apps)
+- must_not violations: none -- Balanced "C+ as revolution, B+ as tool"
+- Completeness: 5 -- Six promises assessed, backlash section, specific examples
+- Precision: 5 -- Amazon Prime Video case study, DHH reference, accurate assessments
+- Actionability: 4 -- Retrospective analysis
+- Structure: 5 -- Promise-by-promise with verdicts, backlash section
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- "Lambda pinball", Cloud Run vs FaaS, edge computing evolution
 - **Composite: 4.73**
 
 ### Condition E
-- must_mention coverage: 5/5 — Cold starts up to 7s (yes), cost at scale (yes), vendor lock-in (yes), succeeded: event-driven (yes), failed: long-running (yes)
-- must_not violations: none
-- Completeness: 4 — Promise-by-promise table, key data
-- Precision: 4 — "Up to 7 seconds cold starts" is a specific claim without clear sourcing
-- Actionability: 4 — Clear verdict
-- Structure: 4 — Promise/verdict table
-- Efficiency: 5 — Very concise
-- Depth: 3 — Less detailed analysis, 70% AWS adoption stat, container-based serverless trend
-- **Composite: 4.00**
+- must_mention coverage: 5/5 -- Cold starts (up to 7 seconds), cost, vendor lock-in, succeeded (event-driven), failed (stateful)
+- must_not violations: none -- Balanced
+- Completeness: 4 -- Promise-by-promise table but less detail
+- Precision: 5 -- Accurate
+- Actionability: 4 -- Concise analysis
+- Structure: 5 -- Promise/verdict table
+- Efficiency: 5 -- Very concise
+- Depth: 3 -- Less detail on each promise
+- **Composite: 4.20**
 
 ### Condition F
-- must_mention coverage: 5/5 — Cold starts (yes), cost (yes), vendor lock-in (yes), succeeded (yes), failed (yes)
-- must_not violations: none
-- Completeness: 5 — Five promises assessed with evidence, vendor lock-in section, verdict
-- Precision: 5 — Accurate with sourced statistics
-- Actionability: 4 — Clear verdict
-- Structure: 5 — Promise-by-promise, persistent limitations, verdict
-- Efficiency: 4 — Detailed
-- Depth: 5 — 70%+ AWS adoption, 3-7% YoY growth, Coca-Cola case study, Lambda anniversary, containerized serverless convergence, IAM/VPC operational complexity
+- must_mention coverage: 5/5 -- Cold starts, cost, vendor lock-in, succeeded (event-driven), failed (latency-sensitive, long-running)
+- must_not violations: none -- Balanced with evidence tables
+- Completeness: 5 -- Detailed promise-by-promise with market data
+- Precision: 5 -- Sourced with Datadog report, Grand View Research
+- Actionability: 4 -- Thorough analysis
+- Structure: 5 -- Evidence table, promise-by-promise verdicts
+- Efficiency: 4 -- Detailed
+- Depth: 5 -- Container-based serverless convergence, edge serverless, AI/ML integration
 - **Composite: 4.73**
 
 ### Condition G
-- must_mention coverage: 5/5 — Cold starts (yes), cost at scale (yes), vendor lock-in (yes), succeeded (yes), failed: long-running/15min timeout (yes)
-- must_not violations: none (balanced)
-- Completeness: 5 — Five promises, persistent limitations, uncertainties
-- Precision: 5 — Careful sourcing with confidence ratings
-- Actionability: 4 — Clear verdict
-- Structure: 5 — Promise-by-promise format, evidence table
-- Efficiency: 3 — Very long
-- Depth: 5 — Coca-Cola 150-day dev, Netflix Lambda usage, VPC connectivity stat (65%), surprise billing problem, Datadog as data source with vendor bias caveat, containerized Lambda convergence
-- **Composite: 4.47**
+- must_mention coverage: 5/5 -- Cold starts, cost at scale, vendor lock-in, succeeded (event-driven, API backends), failed (long-running, stateful)
+- must_not violations: none -- Balanced assessment
+- Completeness: 5 -- Comprehensive promise-by-promise with market data
+- Precision: 5 -- Accurate with Datadog data
+- Actionability: 4 -- Analysis
+- Structure: 5 -- Promise-by-promise with verdicts
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Market size ($24.51B), convergence with containers, edge computing
+- **Composite: 4.73**
+
+### Condition H
+- must_mention coverage: 5/5 -- Cold starts (detailed mitigations), cost at scale (surprise bills), vendor lock-in (detailed migration example), succeeded (event-driven), failed (long-running, latency-sensitive)
+- must_not violations: none -- Balanced
+- Completeness: 5 -- Most thorough promise-by-promise
+- Precision: 5 -- Well-sourced with confidence ratings
+- Actionability: 4 -- Detailed analysis
+- Structure: 5 -- Evidence table, promise-by-promise, verdict
+- Efficiency: 3 -- Very verbose
+- Depth: 5 -- VPC connectivity stats (65%), language ecosystem data, migration difficulty details
+- **Composite: 4.53**
 
 ---
 
 ## Task 4: ra-004
 
-**Ground Truth Summary:** Why Google+ failed. Must mention forced integration (YouTube, Gmail), real names policy backlash, network effects bootstrapping, internal incentives (employee bonuses tied to G+), timing vs Facebook. Must NOT only say "it was too late." Should identify multiple causal factors.
+**Ground Truth Summary:** Why Google+ failed. Must mention forced integration (YouTube, Gmail), real names policy, network effects bootstrapping problem, internal incentive structure (bonuses tied to G+), timing relative to Facebook. Must NOT only give surface-level "too late". Should have multiple causal factors.
 
 ### Condition D
-- must_mention coverage: 5/5 — Forced integration YouTube/Gmail (yes), real names policy (yes, detailed), network effects (yes), internal incentives/bonuses (yes), timing vs Facebook (yes, 750M users)
-- must_not violations: none (seven non-obvious lessons, far beyond surface-level)
-- Completeness: 5 — Seven lessons covering obvious + non-obvious factors
-- Precision: 5 — Accurate, nuanced (competency trap concept, bundling negative value)
-- Actionability: 4 — Lessons generalizable to other products
-- Structure: 5 — Obvious reasons first, then non-obvious lessons numbered
-- Efficiency: 4 — Long but each lesson adds unique insight
-- Depth: 5 — Platform vs destination distinction, security debt of zombie products, second-mover in network-effect markets (TikTok/Discord/WeChat comparison), Google Photos spun-out success, fourth social attempt pattern, LGBTQ+/dissident real-names impact
+- must_mention coverage: 5/5 -- Forced integration, real names policy, network effects, internal incentives (bonuses), timing (Facebook at 750M users)
+- must_not violations: none -- Deep multi-factor analysis
+- Completeness: 5 -- Seven non-obvious lessons, security debt lesson
+- Precision: 5 -- Accurate historical details
+- Actionability: 4 -- Strategic lessons
+- Structure: 5 -- Obvious reasons briefly, then seven non-obvious lessons
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Competency traps, data security as symptom, second-mover disadvantage analysis, LGBTQ+ impact of real names
 - **Composite: 4.73**
 
 ### Condition E
-- must_mention coverage: 5/5 — Forced integration (yes), real names (yes, implied in "coercion"), network effects (yes), internal incentives: employee bonuses (yes), timing: Facebook dominance (yes)
+- must_mention coverage: 5/5 -- Forced integration, real names (implicit in "resentment"), network effects, internal incentives, timing
 - must_not violations: none
-- Completeness: 4 — Five lessons, good coverage
-- Precision: 5 — Accurate
-- Actionability: 4 — Non-obvious lessons applicable
-- Structure: 4 — Lessons listed
-- Efficiency: 4 — Concise
-- Depth: 4 — Premature scaling, engineering culture mismatch, data breaches as symptom
-- **Composite: 4.33**
+- Completeness: 4 -- Five lessons but briefer
+- Precision: 5 -- Accurate
+- Actionability: 4 -- Strategic insights
+- Structure: 4 -- Clean numbered lessons
+- Efficiency: 5 -- Concise
+- Depth: 3 -- Less detail on each lesson
+- **Composite: 4.07**
 
 ### Condition F
-- must_mention coverage: 5/5 — Forced integration (yes), real names backlash (not explicitly named but "coercion destroys trust"), network effects (yes), internal incentives (yes, "organizational structure predicted failure"), timing (yes, "Facebook dominance")
+- must_mention coverage: 5/5 -- Forced integration, real names implied, network effects, internal incentives (bonuses), timing/Facebook dominance
 - must_not violations: none
-- Completeness: 5 — Six non-obvious lessons plus deeper pattern
-- Precision: 5 — Accurate
-- Actionability: 4 — Generalizable lessons
-- Structure: 5 — Numbered lessons with deeper pattern section
-- Efficiency: 4 — Good depth per lesson
-- Depth: 5 — Platform vs product distinction, fear-driven strategy concept, "one-stop shop" model dying, engineering culture vs human problem, individually-useful-from-first-interaction insight
+- Completeness: 5 -- Six non-obvious lessons with evidence
+- Precision: 5 -- Sourced with confidence ratings, specific engagement data
+- Actionability: 4 -- Strategic analysis
+- Structure: 5 -- Obvious vs non-obvious structure
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- 3.3 minutes vs hours engagement data, premature scaling, third-party ecosystem
 - **Composite: 4.73**
 
 ### Condition G
-- must_mention coverage: 5/5 — Forced integration YouTube/Gmail/Play Store (yes), real names (yes), network effects (yes), internal incentives: bonuses tied to G+ (yes), timing: Facebook with 750M+ users (yes)
-- must_not violations: none (six lessons plus obvious reasons)
-- Completeness: 5 — Obvious + six non-obvious lessons, evidence table, counter-arguments, uncertainties
-- Precision: 5 — Specific data: 3.3 min/month, 90% under 5s, $585M investment, data breach numbers
-- Actionability: 4 — Generalizable lessons
-- Structure: 5 — Evidence table, obvious then non-obvious, counter-arguments, uncertainties
-- Efficiency: 3 — Longest output
-- Depth: 5 — Startup Genome premature scaling reference, third-party ecosystem absence, Comscore data, 70% login decline stat, four prior social attempts (Orkut/Buzz/Jaiku/Wave), structural organizational mismatch pattern
-- **Composite: 4.47**
+- must_mention coverage: 5/5 -- Forced integration (YouTube, Gmail), real names, network effects, internal incentives, timing
+- must_not violations: none
+- Completeness: 5 -- Six non-obvious lessons, counter-arguments section
+- Precision: 5 -- Accurate with evidence table
+- Actionability: 4 -- Strategic lessons
+- Structure: 5 -- Evidence table, detailed analysis
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Platform vs product confusion, Goodhart's Law applied, TikTok counter-example
+- **Composite: 4.73**
+
+### Condition H
+- must_mention coverage: 5/5 -- Forced integration, real names implicit in coercion analysis, network effects, internal incentives (bonuses), timing
+- must_not violations: none -- Deep multi-factor analysis
+- Completeness: 5 -- Five detailed non-obvious lessons with broader takeaways
+- Precision: 5 -- Well-sourced with evidence
+- Actionability: 4 -- Strategic analysis
+- Structure: 5 -- Obvious then non-obvious, broader takeaways
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Google product success table, privacy paradox, Forrester citation
+- **Composite: 4.73**
 
 ---
 
 ## Task 5: ra-005
 
-**Ground Truth Summary:** Replication crisis in psychology. Must mention Open Science Collaboration 2015 replication rates (36-39%), specific failures (ego depletion, power posing, priming), reforms (pre-registration, registered reports, open data), which subfields improved, many-labs projects. Must NOT dismiss the field or claim crisis solved. Should use before/after comparison.
+**Ground Truth Summary:** Replication crisis in psychology. Must mention OSC 2015 (36-39%), specific failures (ego depletion, power posing, priming), reforms (pre-registration, registered reports, open data), which subfields improved vs didn't, Many Labs projects. Must NOT dismiss entire field or claim crisis "solved". Should use before/after comparison.
 
 ### Condition D
-- must_mention coverage: 5/5 — OSC 2015 36% (yes), ego depletion/power posing/priming/facial feedback/stereotype threat/growth mindset (yes, exceeds), reforms: pre-registration/registered reports/open data (yes), subfields: social vs cognitive (yes), Many Labs 1/2/3/5 (yes)
-- must_not violations: none (balanced: "genuinely bad" but "self-correcting mechanisms function")
-- Completeness: 5 — Most comprehensive coverage: root causes (5), reforms (7), what hasn't changed (5), specific failures (6)
-- Precision: 5 — Accurate citations (Simmons/Nelson/Simonsohn 2011, Hagger 2016, Wagenmakers 2016, Coles 2022, Yeager 2019, Gino 2023)
-- Actionability: 4 — Clear prognosis, cautiously optimistic
-- Structure: 5 — How bad, root causes, what changed, what hasn't, assessment, prognosis
-- Efficiency: 3 — Very long but information-dense
-- Depth: 5 — Many Labs 5 pre-registration finding, facial feedback partial recovery (Coles 2022), growth mindset 0.1 GPA, stereotype threat publication bias, Francesca Gino case, Data Colada blog, registered reports 50-60% null results, metascience as discipline, DARPA SCORE, prediction markets, HARKing definition, applied impact section (textbooks, policy)
-- **Composite: 4.60**
+- must_mention coverage: 5/5 -- OSC 2015 (36%, 25% social, 50% cognitive), ego depletion, power posing, priming, facial feedback, stereotype threat, growth mindset; reforms (pre-registration, Registered Reports, open data); subfield variation; Many Labs 1-5
+- must_not violations: none -- Balanced, not dismissive, not claiming solved
+- Completeness: 5 -- Most comprehensive with many specific failures, Many Labs detail, root causes
+- Precision: 5 -- Accurate effect sizes, correct attribution
+- Actionability: 4 -- Research survey
+- Structure: 5 -- Evidence, root causes, reforms, before/after
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- HARKing, p-hacking demonstration, Registered Reports null result rates, statistical reform
+- **Composite: 4.73**
 
 ### Condition E
-- must_mention coverage: 4/5 — OSC 2015 36-39% (yes), specific failures: ego depletion/power posing/priming (yes), reforms: pre-registration/registered reports/open data (yes), subfields: social vs cognitive (yes). Many-labs not specifically mentioned.
+- must_mention coverage: 4/5 -- OSC 2015 (36-39%), ego depletion, power posing, priming; reforms (pre-registration, registered reports, open data); subfield variation; Many Labs mentioned briefly. Missing some specific failures
 - must_not violations: none
-- Completeness: 4 — Good coverage, before/after table
-- Precision: 5 — Accurate
-- Actionability: 4 — Clear recommendation
-- Structure: 5 — Before/after table format
-- Efficiency: 4 — Concise
-- Depth: 4 — Sample size increase data, citation incentive shift, pre-registration gaps
-- **Composite: 4.33**
+- Completeness: 4 -- Before/after table, but less detail
+- Precision: 5 -- Accurate
+- Actionability: 4 -- Practical recommendation at end
+- Structure: 5 -- Before/after table
+- Efficiency: 5 -- Very concise
+- Depth: 3 -- Key gap identified (no replication of replication study) but less detail overall
+- **Composite: 4.07**
 
 ### Condition F
-- must_mention coverage: 5/5 — OSC 2015 36% (yes), ego depletion/power posing/priming/facial feedback/marshmallow test (yes), reforms (yes), subfields social vs cognitive (yes), many-labs not directly named but 240,000 paper meta-analysis discussed
-- must_not violations: none (balanced)
-- Completeness: 5 — Detailed coverage with 2025 meta-analysis, persistent problems
-- Precision: 5 — Accurate with source citations and confidence ratings
-- Actionability: 4 — Clear verdict
-- Structure: 5 — Scale of problem, high-profile casualties, nuances, changes, persistent problems, verdict
-- Efficiency: 4 — Detailed but organized
-- Depth: 5 — 240,000 paper meta-analysis (Bogdan 2025), p-value fragile range decrease, marshmallow test SES controls, not unique to psychology (Amgen 90%), many preregistrations never public (Logg & Lakens 2025)
+- must_mention coverage: 5/5 -- OSC 2015 (36%), ego depletion, power posing, priming; reforms (pre-registration, registered reports, open data); subfield variation; Many Labs
+- must_not violations: none -- Balanced "credibility revolution" framing
+- Completeness: 5 -- Comprehensive with Bogdan 2025 study, specific reform mechanisms
+- Precision: 5 -- Well-sourced with confidence ratings, Bogdan 2025
+- Actionability: 4 -- Research analysis
+- Structure: 5 -- How bad, what changed, what remains
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Bogdan 2025 (240,000 papers), p-hacking persistence, theory crisis, counter-arguments
 - **Composite: 4.73**
 
 ### Condition G
-- must_mention coverage: 5/5 — OSC 2015 36% (yes), ego depletion/power posing/priming (yes), reforms: pre-registration/registered reports/open data (yes), subfields (yes), Bogdan 2025 meta-analysis as many-labs equivalent (yes)
-- must_not violations: none (balanced: "genuinely severe" but "responded substantively")
-- Completeness: 5 — Evidence table, detailed analysis, persistent problems, uncertainties
-- Precision: 5 — Careful sourcing with confidence ratings, Bogdan 2025 study specifics
-- Actionability: 4 — Overall assessment
-- Structure: 5 — Evidence table, how bad, what changed (4 points), persistent problems, overall assessment, uncertainties
-- Efficiency: 3 — Longest output
-- Depth: 5 — Bogdan 2025 (240,355 papers), Amgen 90% non-replication, $28.2B cost, Logg & Lakens 2025 preregistration gaps, Hardwicke 2024 slow adoption, p-value fragile range decrease, sample size doubling, proxy measurement caveat
-- **Composite: 4.47**
+- must_mention coverage: 5/5 -- OSC 2015 (36%), ego depletion, power posing, priming, facial feedback, marshmallow test; reforms; subfield variation; Many Labs
+- must_not violations: none -- Balanced
+- Completeness: 5 -- Comprehensive with 2025 meta-analysis
+- Precision: 5 -- Accurate with specific citations
+- Actionability: 4 -- Research analysis
+- Structure: 5 -- Scale of problem, casualties, nuances, changes
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- 240,000 papers analysis, AI-assisted replication assessment, Big Team Science
+- **Composite: 4.73**
+
+### Condition H
+- must_mention coverage: 5/5 -- OSC 2015 (36%), ego depletion, power posing, priming; reforms (pre-registration, registered reports, open data); subfield variation; Many Labs
+- must_not violations: none -- Balanced "credibility revolution" framing
+- Completeness: 5 -- Very thorough with Bogdan 2025, counter-arguments
+- Precision: 5 -- Well-sourced with confidence ratings
+- Actionability: 4 -- Research analysis
+- Structure: 5 -- Evidence table, how bad, what changed, counter-arguments
+- Efficiency: 3 -- Very verbose
+- Depth: 5 -- Bogdan 2025, p-hacking coin analogy, Stroebe & Strack counter-argument, theory crisis
+- **Composite: 4.53**
 
 ---
 
 ## Summary
 
-| Task | D | E | F | G |
-|------|---|---|---|---|
-| ra-001 | 4.73 | 4.00 | 4.73 | 4.47 |
-| ra-002 | 4.47 | 3.80 | 4.33 | 4.33 |
-| ra-003 | 4.73 | 4.00 | 4.73 | 4.47 |
-| ra-004 | 4.73 | 4.33 | 4.73 | 4.47 |
-| ra-005 | 4.60 | 4.33 | 4.73 | 4.47 |
-| **Mean** | **4.65** | **4.09** | **4.65** | **4.44** |
+| Task | D | E | F | G | H |
+|------|---|---|---|---|---|
+| ra-001 | 4.73 | 3.93 | 4.73 | 4.73 | 4.73 |
+| ra-002 | 4.53 | 3.53 | 4.53 | 4.33 | 4.53 |
+| ra-003 | 4.73 | 4.20 | 4.73 | 4.73 | 4.53 |
+| ra-004 | 4.73 | 4.07 | 4.73 | 4.73 | 4.73 |
+| ra-005 | 4.73 | 4.07 | 4.73 | 4.73 | 4.53 |
+| **Mean** | **4.69** | **3.96** | **4.69** | **4.65** | **4.61** |

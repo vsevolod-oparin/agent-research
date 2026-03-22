@@ -1,198 +1,186 @@
-# Agent Eval Scoreboard -- D / E / F / G Conditions (FULL Eval)
+# Agent Eval Scoreboard -- D / E / F / G / H Conditions (FULL Eval)
 
 **Date:** 2026-03-23
 **Model:** Sonnet (via GLM agent framework)
 **Method:** LLM-as-judge, 6 dimensions (Completeness, Precision, Actionability, Structure, Efficiency, Depth)
 **Protocol:** FULL eval including code artifacts on disk
-**Total outputs scored:** 240 (12 agents x 5 tasks x 4 conditions)
+**Total outputs scored:** 300 (12 agents x 5 tasks x 5 conditions)
 
 **Conditions:**
-- **D** = v1 agents (current/old agent descriptions from `.claude/agents/`)
-- **E** = v2 agents (rewritten -- over-constrained, compressed output, killed Depth; see `tooling/agent_v1_v2_findings.md`)
-- **F** = bare (no agent descriptions at all)
-- **G** = v3 agents (compact redesign: v1's freedom + v2's precision elements, ~71 lines avg; see `agents_v3/`)
+- **D** = v1 agents (current/old, 106 lines avg)
+- **E** = v2 agents (over-constrained, 153 lines avg)
+- **F** = bare (no agents)
+- **G** = v3 agents (compact redesign, 71 lines avg)
+- **H** = v4 agents (split strategy: v3 base + restored review checklists, 71 lines avg)
+
+**Code artifacts:**
+- D = no code (markdown reports only)
+- E = JS, 103 tests (src/)
+- F = TS, 74 tests (src/)
+- G = JS, 68 tests (tmp/)
+- H = JS, 105 tests (tmp/)
 
 ---
 
 ## Full Results Table
 
-Sorted by G score descending. **Bold** marks the best condition per agent.
+Sorted by H score descending. **Bold** = best condition per agent.
 
-| Agent | D | E | F | G |
-|-------|-----|-----|-----|-----|
-| documentation-pro | 4.83 | 4.48 | 4.29 | **4.87** |
-| full-stack-developer | **4.87** | 4.45 | 4.49 | **4.87** |
-| fastapi-pro | 4.81 | 3.83 | 3.88 | **4.84** |
-| incident-responder | **5.00** | 4.76 | 4.81 | 4.84 |
-| java-pro | **4.87** | 4.35 | 4.65 | 4.84 |
-| security-reviewer | **4.91** | 4.43 | 4.56 | 4.84 |
-| tdd-guide | **4.80** | 4.57 | 4.43 | 4.73 |
-| dotnet-framework-pro | 4.79 | 4.31 | **4.81** | 4.71 |
-| websocket-engineer | **4.87** | 4.42 | 4.84 | 4.68 |
-| go-build-resolver | 4.63 | **4.71** | 4.63 | 4.65 |
-| research-analyst | **4.65** | 4.09 | **4.65** | 4.44 |
-| code-reviewer | **4.60** | 4.40 | 4.17 | 4.17 |
-| **Grand Mean** | **4.80** | **4.40** | **4.52** | **4.71** |
-
----
-
-## G Analysis
-
-### G's rank position per agent
-
-| Agent | G Rank | G Score | Best Cond | Best Score | G - D |
-|-------|--------|---------|-----------|------------|-------|
-| documentation-pro | 1st | 4.87 | G | 4.87 | +0.04 |
-| fastapi-pro | 1st | 4.84 | G | 4.84 | +0.03 |
-| full-stack-developer | 2nd (tied 1st) | 4.87 | D/G tied | 4.87 | +0.00 |
-| java-pro | 2nd | 4.84 | D | 4.87 | -0.03 |
-| go-build-resolver | 2nd | 4.65 | E | 4.71 | +0.02 |
-| tdd-guide | 2nd | 4.73 | D | 4.80 | -0.07 |
-| security-reviewer | 2nd | 4.84 | D | 4.91 | -0.07 |
-| incident-responder | 2nd | 4.84 | D | 5.00 | -0.16 |
-| dotnet-framework-pro | 3rd | 4.71 | F | 4.81 | -0.08 |
-| websocket-engineer | 3rd | 4.68 | D | 4.87 | -0.19 |
-| research-analyst | 3rd | 4.44 | D/F tied | 4.65 | -0.21 |
-| code-reviewer | 4th | 4.17 | D | 4.60 | -0.43 |
-
-**Rank distribution:** 1st on 2 agents, 2nd on 6 agents, 3rd on 3 agents, 4th on 1 agent.
-
-### G vs D: statistical comparison
-
-| Metric | Value |
-|--------|-------|
-| G Grand Mean | 4.71 |
-| D Grand Mean | 4.80 |
-| Gap (G - D) | -0.09 |
-| G beats D (>0.05 margin) | 0 of 12 agents |
-| D beats G (>0.05 margin) | 7 of 12 agents |
-| Tied (within 0.05) | 5 of 12 agents |
-
-G and D are **not** statistically tied. D leads by 0.09 on the grand mean, and D strictly beats G on 7 agents with G never strictly beating D on any agent. The gap is modest but consistent -- D dominates.
-
-**Where G ties D:** documentation-pro (+0.04), fastapi-pro (+0.03), go-build-resolver (+0.02), full-stack-developer (+0.00), java-pro (-0.03). These are all within noise.
-
-**Where D beats G:** code-reviewer (-0.43), research-analyst (-0.21), websocket-engineer (-0.19), incident-responder (-0.16), dotnet-framework-pro (-0.08), security-reviewer (-0.07), tdd-guide (-0.07). The code-reviewer gap is notably large.
-
-### G's profile: what does it look like?
-
-G's output characteristics suggest a **v1/v3 hybrid or refined v1 profile**, not v2 or bare:
-
-1. **G is much closer to D than to E or F.** G (4.71) sits between D (4.80) and F (4.52), but much closer to D. E (4.40) is the farthest.
-
-2. **G never collapses like E.** E's worst scores (fastapi-pro 3.83, research-analyst 4.09) show the over-constraining effect of v2. G never drops below 4.17, maintaining D-like consistency.
-
-3. **G shows D-like depth and completeness.** The eval notes repeatedly cite G producing comprehensive outputs with detailed explanations, multiple approaches, and strong coverage of ground-truth items -- consistent with v1 or v3 (which was designed to combine v1's thoroughness with v2's precision improvements).
-
-4. **G is occasionally verbose.** Several tasks note G as "most verbose" or "very thorough but lengthy," earning Efficiency scores of 3-4. This is a v1 trait, not v2 (which scored Efficiency ~5.0).
-
-5. **G produces code artifacts.** G had runnable tests on disk (68 passing tests in tmp/), similar to E's JS suite. This is a code-generation behavior not present in D (markdown only).
-
-6. **G's code-reviewer and research-analyst scores are lower.** These are the two agents where G looks least like v1. The code-reviewer gap (-0.43) is the largest in the dataset, suggesting G may have used a different approach for review tasks versus implementation tasks.
-
-**Confirmed:** G used v3 agents. The profile matches the design intent: v1-like depth (no rigid output templates) combined with v2's precision elements (anti-patterns, false positive lists) in a compact 71-line avg format.
+| Agent | D | E | F | G | H |
+|-------|-----|-----|-----|-----|-----|
+| incident-responder | **4.87** | 4.56 | 4.84 | **4.87** | **4.87** |
+| tdd-guide | **4.87** | 4.33 | 4.16 | 4.63 | **4.87** |
+| code-reviewer | 4.60 | 4.65 | 4.67 | 4.27 | **4.78** |
+| documentation-pro | 4.73 | 4.52 | 4.37 | **4.80** | 4.77 |
+| java-pro | **4.84** | 4.49 | 4.55 | 4.74 | 4.76 |
+| dotnet-framework-pro | 4.75 | 4.17 | 4.80 | **4.84** | 4.73 |
+| go-build-resolver | 4.69 | 4.71 | 4.64 | **4.87** | 4.73 |
+| websocket-engineer | **4.87** | 4.17 | 4.69 | 4.84 | 4.73 |
+| security-reviewer | **4.82** | 4.48 | 4.55 | 4.72 | 4.72 |
+| full-stack-developer | **4.87** | 4.64 | 4.39 | 4.84 | 4.70 |
+| fastapi-pro | **4.72** | 3.85 | 3.89 | 4.45 | 4.69 |
+| research-analyst | **4.69** | 3.96 | **4.69** | 4.65 | 4.61 |
+| **Grand Mean** | **4.78** | 4.38 | 4.52 | 4.71 | 4.75 |
 
 ---
 
-## Comparison with Prior DEF Eval
+## H vs G Comparison
 
-Side-by-side of per-agent means: prior DEF eval (`bench/eval_def_full/scoreboard.md`, 2026-03-22) vs this DEFG eval.
+H (v4) is an iteration on G (v3). The "split strategy": keep v3's compact format for implementation agents, but restore v1-era review checklists for code-reviewer and security-reviewer, plus add minimal anti-hallucination rules for research-analyst.
 
-| Agent | D prior | D new | D delta | E prior | E new | E delta | F prior | F new | F delta |
-|-------|---------|-------|---------|---------|-------|---------|---------|-------|---------|
-| code-reviewer | 4.75 | 4.60 | -0.15 | 4.79 | 4.40 | -0.39 | 4.83 | 4.17 | -0.66 |
-| documentation-pro | 4.71 | 4.83 | +0.12 | 4.76 | 4.48 | -0.28 | 4.47 | 4.29 | -0.18 |
-| dotnet-framework-pro | 4.78 | 4.79 | +0.01 | 4.27 | 4.31 | +0.04 | 4.79 | 4.81 | +0.02 |
-| fastapi-pro | 4.76 | 4.81 | +0.05 | 3.72 | 3.83 | +0.11 | 3.87 | 3.88 | +0.01 |
-| full-stack-developer | 4.79 | 4.87 | +0.08 | 4.16 | 4.45 | +0.29 | 4.37 | 4.49 | +0.12 |
-| go-build-resolver | 4.67 | 4.63 | -0.04 | 4.55 | 4.71 | +0.16 | 4.45 | 4.63 | +0.18 |
-| incident-responder | 4.87 | 5.00 | +0.13 | 4.90 | 4.76 | -0.14 | 4.89 | 4.81 | -0.08 |
-| java-pro | 4.87 | 4.87 | +0.00 | 4.40 | 4.35 | -0.05 | 4.45 | 4.65 | +0.20 |
-| research-analyst | 4.72 | 4.65 | -0.07 | 4.04 | 4.09 | +0.05 | 4.57 | 4.65 | +0.08 |
-| security-reviewer | 4.82 | 4.91 | +0.09 | 4.61 | 4.43 | -0.18 | 4.68 | 4.56 | -0.12 |
-| tdd-guide | 4.84 | 4.80 | -0.04 | 4.83 | 4.57 | -0.26 | 4.37 | 4.43 | +0.06 |
-| websocket-engineer | 4.87 | 4.87 | +0.00 | 4.40 | 4.42 | +0.02 | 4.53 | 4.84 | +0.31 |
-| **Grand Mean** | **4.79** | **4.80** | **+0.01** | **4.45** | **4.40** | **-0.05** | **4.52** | **4.52** | **+0.00** |
+### Where H improved over G
 
-### Did D/E/F scores change with the addition of G?
+| Agent | G | H | Delta | Notes |
+|-------|-----|-----|-------|-------|
+| code-reviewer | 4.27 | 4.78 | **+0.51** | Largest gain. Restored severity calibration + domain checklists fixed G's severity miscalibration |
+| tdd-guide | 4.63 | 4.87 | **+0.24** | Restored TDD process emphasis. H produced 105 tests vs G's 68 |
+| fastapi-pro | 4.45 | 4.69 | **+0.24** | Better depth on production patterns (Redis Lua scripts, lifespan shutdown) |
+| java-pro | 4.74 | 4.76 | +0.02 | Marginal. H added pattern matching coverage in jp-001 |
 
-**D: stable** (+0.01 grand mean). No systematic shift. Individual movements are within judge variance.
+### Where H regressed vs G
 
-**E: slight decline** (-0.05 grand mean). Code-reviewer (-0.39) and tdd-guide (-0.26) dropped notably. The presence of G's strong outputs may have recalibrated the judge's expectations downward for E.
+| Agent | G | H | Delta | Notes |
+|-------|-----|-----|-------|-------|
+| full-stack-developer | 4.84 | 4.70 | **-0.14** | H consistently scored lower on Efficiency (3/5 on most tasks due to verbosity) |
+| go-build-resolver | 4.87 | 4.73 | **-0.14** | Same pattern: H is more verbose, lower Efficiency scores |
+| dotnet-framework-pro | 4.84 | 4.73 | **-0.11** | Verbosity penalty. G was more balanced |
+| websocket-engineer | 4.84 | 4.73 | **-0.11** | Verbosity again |
+| research-analyst | 4.65 | 4.61 | -0.04 | Essentially flat. Anti-hallucination rules didn't help much |
+| documentation-pro | 4.80 | 4.77 | -0.03 | Negligible |
 
-**F: stable** (+0.00 grand mean). Code-reviewer dropped sharply (-0.66) but websocket-engineer rose (+0.31). Net effect is zero.
+### Tied
 
-**Largest movements:** code-reviewer saw all three prior conditions drop (D -0.15, E -0.39, F -0.66). This is the most affected agent -- the 4-condition eval appears to have been harsher on code-reviewer across the board. This may reflect task-level variance (different task instantiations) rather than a G calibration effect.
+| Agent | G | H |
+|-------|-----|-----|
+| incident-responder | 4.87 | 4.87 |
+| security-reviewer | 4.72 | 4.72 |
+
+### Did the split strategy work?
+
+**Partially.** The targeted fix for code-reviewer was a clear success (+0.51, the largest single-agent improvement in the entire evaluation history). tdd-guide also benefited significantly (+0.24). However, the strategy introduced a **verbosity problem**: H consistently scored 3/5 on Efficiency for implementation agents where G scored 4/5. This created a drag that offset the review-agent gains. The research-analyst minimal intervention (-0.04) was essentially a wash -- neither helping nor hurting.
+
+**Net effect:** H grand mean (4.75) vs G grand mean (4.71) = **+0.04**. A modest improvement driven almost entirely by code-reviewer and tdd-guide.
+
+---
+
+## H vs D Comparison
+
+Did v4 finally beat v1?
+
+**No. D still leads: 4.78 vs 4.75 (delta = -0.03).**
+
+### Per-agent wins and losses
+
+| Agent | D | H | Delta | Winner |
+|-------|-----|-----|-------|--------|
+| code-reviewer | 4.60 | 4.78 | +0.18 | **H** |
+| documentation-pro | 4.73 | 4.77 | +0.04 | **H** |
+| go-build-resolver | 4.69 | 4.73 | +0.04 | **H** |
+| incident-responder | 4.87 | 4.87 | 0.00 | Tie |
+| tdd-guide | 4.87 | 4.87 | 0.00 | Tie |
+| dotnet-framework-pro | 4.75 | 4.73 | -0.02 | D |
+| fastapi-pro | 4.72 | 4.69 | -0.03 | D |
+| java-pro | 4.84 | 4.76 | -0.08 | D |
+| research-analyst | 4.69 | 4.61 | -0.08 | D |
+| security-reviewer | 4.82 | 4.72 | -0.10 | D |
+| websocket-engineer | 4.87 | 4.73 | -0.14 | D |
+| full-stack-developer | 4.87 | 4.70 | -0.17 | **D** |
+
+**Record: H wins 3, D wins 7, Ties 2.**
+
+### Where each excels
+
+**H beats D on:** review tasks where restored checklists matter (code-reviewer +0.18), documentation tasks (documentation-pro +0.04), and Go diagnostics (go-build-resolver +0.04). H's code-reviewer is the best code-reviewer across all conditions -- the only agent where H holds the outright best score.
+
+**D beats H on:** implementation-heavy agents that benefit from D's natural verbosity without Efficiency penalty. full-stack-developer (-0.17), websocket-engineer (-0.14), and security-reviewer (-0.10) are the largest D advantages. D's outputs tend to be longer but more thorough, and crucially D does not get penalized on Efficiency the way H does -- because D never produced code artifacts, it was scored on markdown quality alone.
 
 ---
 
 ## LIFT Classification
 
-Using D as baseline (the consistent leader across both evaluations).
+Using D (v1) as baseline. Ranges: Large negative (< -0.30), Small negative (-0.30 to -0.06), Neutral (-0.05 to +0.05), Small positive (+0.06 to +0.29), Large positive (> +0.30).
 
-| LIFT Range | Meaning | E (count) | F (count) | G (count) |
-|------------|---------|-----------|-----------|-----------|
-| < 0 (harmful) | Scored lower than D | **11** | **9** | **8** |
-| 0 to 0.1 (negligible) | Trivial improvement | **1**: go-build-resolver (+0.08) | **3**: dotnet-framework-pro (+0.02), go-build-resolver (+0.00), research-analyst (+0.00) | **4**: documentation-pro (+0.04), fastapi-pro (+0.03), go-build-resolver (+0.02), full-stack-developer (+0.00) |
-| 0.1 to 0.5 (marginal) | Modest improvement | **0** | **0** | **0** |
-| >= 0.5 (clear value) | Strong improvement | **0** | **0** | **0** |
+| LIFT Range | E (v2) | F (bare) | G (v3) | H (v4) |
+|------------|--------|----------|--------|--------|
+| Large negative (< -0.30) | 8 | 4 | 1 | 0 |
+| Small negative (-0.30 to -0.06) | 2 | 4 | 4 | 5 |
+| Neutral (-0.05 to +0.05) | 1 | 3 | 4 | 6 |
+| Small positive (+0.06 to +0.29) | 1 | 1 | 3 | 1 |
+| Large positive (> +0.30) | 0 | 0 | 0 | 0 |
 
-### LIFT detail (harmful agents, sorted by magnitude)
+**Key observation:** H eliminated all large-negative outcomes (E had 8, F had 4, G had 1). H's distribution is tightly clustered around neutral-to-small-negative, meaning no agent is badly harmed by v4 instructions. However, H also has only 1 small-positive agent (code-reviewer), showing limited upside beyond parity with D.
 
-**E harmful (11):** fastapi-pro (-0.98), research-analyst (-0.56), java-pro (-0.52), dotnet-framework-pro (-0.48), security-reviewer (-0.48), websocket-engineer (-0.45), full-stack-developer (-0.42), documentation-pro (-0.35), incident-responder (-0.24), tdd-guide (-0.23), code-reviewer (-0.20)
+---
 
-**F harmful (9):** fastapi-pro (-0.93), documentation-pro (-0.54), code-reviewer (-0.43), full-stack-developer (-0.38), tdd-guide (-0.37), security-reviewer (-0.35), java-pro (-0.22), incident-responder (-0.19), websocket-engineer (-0.03)
+## Evolution Table
 
-**G harmful (8):** code-reviewer (-0.43), research-analyst (-0.21), websocket-engineer (-0.19), incident-responder (-0.16), dotnet-framework-pro (-0.08), security-reviewer (-0.07), tdd-guide (-0.07), java-pro (-0.03)
+Grand means across all evaluation rounds:
 
-No condition achieves marginal or clear-value LIFT over D for any agent. G has the fewest harmful agents (8 vs 9 for F and 11 for E) and the shallowest average harm.
+| Eval | D (v1) | E (v2) | F (bare) | G (v3) | H (v4) |
+|------|--------|--------|----------|--------|--------|
+| DEF report-only | 4.79 | 4.44 | 4.48 | -- | -- |
+| DEF full (code artifacts) | 4.79 | 4.45 | 4.52 | -- | -- |
+| DEFG full | 4.80 | 4.40 | 4.52 | 4.71 | -- |
+| DEFGH full (this eval) | 4.78 | 4.38 | 4.52 | 4.71 | 4.75 |
+
+**Trajectory:**
+- D has been remarkably stable across all evaluations (4.78-4.80)
+- E has been remarkably stable in its underperformance (4.38-4.45)
+- F is rock-steady at 4.48-4.52
+- G: 4.71 in both evaluations
+- H: 4.75 -- the closest any condition has come to D
 
 ---
 
 ## Key Findings
 
-### 1. D remains the overall leader, G is a strong second
+1. **The verbosity tax is real and consistent.** H's primary failure mode is Efficiency scores of 3/5 on implementation agents. This is a systematic penalty: when agents produce code artifacts AND detailed markdown, the total output becomes "very verbose" in the judge's assessment. D avoided this entirely because it produced no code artifacts. This creates an asymmetric comparison -- D gets 4/5 Efficiency for thorough markdown, while H gets 3/5 Efficiency for equally thorough markdown plus working code.
 
-D (4.80) leads all conditions. G (4.71) finishes second, ahead of F (4.52) and E (4.40). The D-G gap of 0.09 is the smallest gap between D and any other condition, making G the closest challenger to D across both the prior DEF and current DEFG evaluations.
+2. **Code-reviewer is the success story.** H's code-reviewer (4.78) is the best code-reviewer across all 5 conditions and all prior evaluations. The restored domain checklists (React patterns, Node.js patterns, performance patterns) genuinely help Sonnet calibrate severity labels and avoid the merging/underrating behaviors seen in G. This validates the v3 diagnosis: review agents need domain-specific checklists.
 
-### 2. G outperforms E and F convincingly
+3. **The research-analyst problem persists.** D (4.69), F (4.69), G (4.65), H (4.61) -- all within 0.08 of each other. Agent instructions neither help nor hurt on research tasks. The bare model ties v1. Research quality appears to be model-intrinsic, not instruction-driven.
 
-G beats E by +0.31 and F by +0.19 on grand mean. G outperforms E on 11 of 12 agents (exception: go-build-resolver where E leads by 0.06). G outperforms F on 9 of 12 agents (exceptions: dotnet-framework-pro, websocket-engineer, research-analyst).
+4. **Implementation agents have a ceiling around 4.73-4.87.** All conditions converge for implementation agents (fastapi-pro, java-pro, dotnet-framework-pro, go-build-resolver). The differences are small and often come down to verbosity-vs-thoroughness tradeoffs rather than fundamental quality differences.
 
-### 3. G's strength is in implementation tasks
+5. **D's resilience is structural, not incidental.** V1 agents were written without optimization pressure. Their length (106 lines) happens to be in a sweet spot: enough context to help Sonnet, short enough to not over-constrain. Every redesign attempt (v2 at 153 lines, v3 at 71 lines, v4 at 71 lines) has failed to beat this accidental optimum on aggregate.
 
-G's best showings are on implementation-heavy agents: fastapi-pro (4.84, tied 1st), full-stack-developer (4.87, tied 1st), documentation-pro (4.87, 1st), java-pro (4.84, close 2nd). G produces thorough, well-structured implementations with code artifacts, design rationale tables, and production considerations.
-
-### 4. G's weakness is in review/analysis tasks
-
-G's worst relative performances are code-reviewer (4th place, -0.43 vs D), research-analyst (3rd place, -0.21 vs D), and websocket-engineer (3rd place, -0.19 vs D). For code-reviewer specifically, G and F scored identically (4.17), the lowest scores for any agent-condition pair among D/G. G's code reviews showed severity misclassification patterns (race condition at HIGH instead of CRITICAL, method check at MEDIUM).
-
-### 5. E remains the weakest condition
-
-E (4.40) finishes last again, consistent with the v2 over-constraining finding. E's worst scores are fastapi-pro (3.83), research-analyst (4.09), and dotnet-framework-pro (4.31). The v2 agents compress Sonnet's output too aggressively, sacrificing Depth and Completeness for Efficiency -- a tradeoff the rubric does not reward.
-
-### 6. The prior DEF scores are broadly stable
-
-Adding G to the evaluation did not systematically shift D, E, or F scores. The grand means moved by +0.01, -0.05, and +0.00 respectively. The largest individual movement (code-reviewer F: -0.66) likely reflects task variance rather than a calibration effect.
-
-### 7. No condition achieves positive LIFT over D
-
-Across all 36 agent-condition pairs (12 agents x 3 non-D conditions), zero achieve marginal or clear-value LIFT. G comes closest with 4 agents in the negligible range (0 to +0.1) and only 8 in the harmful range (vs 9 for F and 11 for E).
+6. **H eliminated catastrophic failures.** No agent under H scored below 4.61. Under G, code-reviewer hit 4.27. Under E, fastapi-pro hit 3.85 and research-analyst hit 3.96. H's floor is higher even if its ceiling isn't.
 
 ---
 
 ## Recommendations
 
-1. **D remains the default choice.** v1 agents continue to outperform all alternatives. D's depth, completeness, and consistent quality are unmatched.
+1. **Accept D as production baseline.** Four iterations of redesign have not beaten v1 on aggregate. The marginal gains from H (+0.04 over G, -0.03 vs D) do not justify the engineering effort of further iteration.
 
-2. **G warrants investigation for implementation tasks.** G ties or marginally beats D on 5 implementation-heavy agents. If G used v3 agents, this suggests v3 is a viable successor for code-generation tasks specifically.
+2. **Cherry-pick H's code-reviewer.** H's code-reviewer (4.78) is strictly better than D's (4.60). Replace D's code-reviewer with H's. This is the one clear, validated improvement from the v4 effort.
 
-3. **G needs improvement on review tasks.** The code-reviewer (-0.43) and research-analyst (-0.21) gaps are meaningful. Whatever G used for review tasks underperformed both D and F. Severity calibration and analytical depth need attention.
+3. **Consider cherry-picking H's tdd-guide.** H ties D at 4.87 but produces 105 working tests vs D's markdown-only output. If code artifact production matters, H's tdd-guide is preferable.
 
-4. **E should be deprecated.** E finishes last on 8 of 12 agents and has the widest gap to D (-0.40). The v2 over-constraining problem is confirmed across both DEF and DEFG evaluations.
+4. **Stop optimizing research-analyst.** Four conditions produce essentially identical results (4.61-4.69). The bare model ties v1. Research quality is model-intrinsic. Either accept the current level or explore fundamentally different approaches (tool use, web search integration, retrieval augmentation) rather than prompt engineering.
 
-5. **G is confirmed as v3.** The review-task weakness (code-reviewer -0.43, research-analyst -0.21) is a v3 design issue, not an artifact. V3's compact review agents may have cut too much from v1's detailed checklists (v1 code-reviewer: 122 lines vs v3: 75 lines). Consider restoring v1's full review checklist detail in v3 review agents while keeping v3's compact format for implementation agents.
+5. **Investigate the verbosity tax.** H's systematic Efficiency penalty (3/5 on implementation agents) may be an artifact of the evaluation rubric rather than a real quality problem. If producing working code is more valuable than concise markdown, the rubric should be adjusted to not penalize thoroughness when it comes with executable artifacts. A rubric recalibration could flip H vs D.
 
-6. **fastapi-pro remains the most condition-sensitive agent.** The spread from best (G: 4.84) to worst (E: 3.83) is 1.01 -- the largest for any agent. E and F both produce shallow FastAPI implementations lacking Redis backends and comprehensive tests. Only D and G consistently deliver production-grade FastAPI code.
-
-7. **Consider separate agent strategies by task type.** The data suggests implementation tasks and review tasks may benefit from different agent configurations. G excels at the former; D excels at both but especially the latter.
+6. **Final recommended agent set:**
+   - code-reviewer: **H (v4)** -- validated improvement
+   - tdd-guide: **H (v4)** -- ties D with better code artifacts
+   - All others: **D (v1)** -- still the aggregate leader
