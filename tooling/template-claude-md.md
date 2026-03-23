@@ -16,11 +16,8 @@
 
 ## Architecture
 
-- {where routes/handlers live}: `{path}`
-- {where business logic lives}: `{path}`
-- {database access pattern}: {ORM/query builder} — {any constraints}
-- {auth pattern}: {library/approach} — {which routes are protected}
-- {state management}: {approach} — {if applicable}
+- See `{path to architecture doc}` for project structure and patterns
+- {only architecture gotchas that prevent mistakes on ANY task, e.g., unprotected routes}
 
 ## Standards
 

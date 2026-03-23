@@ -65,7 +65,7 @@ Full guide for project-level CLAUDE.md files. Key takeaways:
 **The five essential sections** (in this order — critical first due to positional attention bias):
 1. **Build/test/lint commands** — most universally valuable content
 2. **Gotchas and off-limits** — highest ROI per line
-3. **Architecture** — where things live, key patterns
+3. **Architecture pointer** — link to dedicated doc, only gotchas inline (full architecture is a knowledge file, not always-loaded context)
 4. **Standards** — only what linters DON'T enforce
 5. **Verification** — what to run before finishing (2-3x quality improvement per Boris Cherny)
 
@@ -173,11 +173,8 @@ Quality checks before shipping:
 
 ## Architecture
 
-- {where routes/handlers live}: `{path}`
-- {where business logic lives}: `{path}`
-- {database access pattern}: {ORM/query builder} — {any constraints}
-- {auth pattern}: {library/approach} — {which routes are protected}
-- {state management}: {approach} — {if applicable}
+- See `{path to architecture doc}` for project structure and patterns
+- {only architecture gotchas that prevent mistakes on ANY task, e.g., unprotected routes}
 
 ## Standards
 

@@ -48,17 +48,21 @@ Non-obvious facts the model will get wrong without explicit instruction.
 
 The test: "Has Claude gotten this wrong before?" If yes, it goes here.
 
-### 3. Architecture (where things live, key patterns)
+### 3. Architecture pointer (1-2 lines in root, details in a knowledge file)
 
 ```markdown
 ## Architecture
-- API routes: `src/routes/`, one file per resource
-- Business logic: `src/services/`, never in route handlers
-- DB queries through Prisma only — no raw SQL
+- See `docs/architecture.md` for project structure and patterns
 - Auth: Clerk middleware on `/dashboard/*`, webhooks unprotected
 ```
 
-Only include what differs from obvious defaults. Don't describe what the model can discover by reading `package.json` and the folder structure.
+Architecture details are only relevant when changing architecture — not on every task. Put the full description in a knowledge file and reference it from CLAUDE.md. Only keep architecture gotchas (like unprotected routes) in root because those prevent mistakes on any task.
+
+```markdown
+## Knowledge
+| File | Read when |
+| `docs/architecture.md` | Changing project structure, adding new modules |
+```
 
 ### 4. Coding Standards (linter gaps only)
 
@@ -227,7 +231,8 @@ The model knows how to structure output. Let it.
 |---------|----------|-----|
 | Build/test/lint commands | **CLAUDE.md** | Needed on every task |
 | Gotchas and off-limits | **CLAUDE.md** | Prevent mistakes across all tasks |
-| Architecture conventions | **CLAUDE.md** | Broad applicability |
+| Architecture details | **Knowledge file** | Only relevant when changing architecture |
+| Architecture gotchas | **CLAUDE.md** | Prevent mistakes across all tasks (e.g., unprotected routes) |
 | Module-specific standards | **`.claude/rules/`** | Scoped loading, doesn't tax unrelated tasks |
 | Code formatting rules | **Hooks** | Deterministic > advisory |
 | Linting rules | **Linter config** | `.eslintrc`, `ruff.toml`, etc. |
