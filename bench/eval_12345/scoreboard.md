@@ -202,4 +202,4 @@ The following tasks showed the widest variation across conditions and best separ
 
 ### The meta-insight
 
-7. **Optimize execution mode before optimizing agent descriptions.** We spent months improving agents from 4.35 to 4.71 (+0.36). Switching from Sonnet direct to Opus+GLM4.7 loses 0.69 in one step. The execution pipeline matters more than the prompt.
+7. **Optimize execution mode before optimizing agent descriptions.** Five iterations of agent optimization improved quality from 4.35 to 4.71 (+0.36). Switching from Sonnet direct to Opus+GLM4.7 loses 0.69 in one step. The execution pipeline matters more than the prompt.
