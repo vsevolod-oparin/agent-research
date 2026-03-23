@@ -1,317 +1,344 @@
-# fastapi-pro Evaluation (D/E/F/G/H)
+# fastapi-pro Evaluation (D/E/F/G/H/I)
 
-## Task 1: fa-001
-
-**Ground Truth Summary:** CSV upload endpoint: UploadFile with content-type check, async file reading, Pydantic response model, error handling for malformed CSV, file size limit. Complete working endpoint + response model + error examples.
+## Task 1: fa-001 (CSV File Upload)
+**Ground Truth Summary:** UploadFile with content-type check, async file reading, Pydantic response model, error handling for malformed CSV, file size limit.
 
 ### Condition D
-- must_mention coverage: 4/5 -- UploadFile with content-type check, async file reading, Pydantic response model (CSVSummary), error handling for malformed CSV (encoding, missing columns, empty); file size limit not explicitly enforced
-- must_not violations: None
+- must_mention: 4/5 -- UploadFile with content-type check, async file.read(), Pydantic models (CSVSummary, ColumnStats, AgeStats), error handling (malformed CSV, missing columns, encoding). Missing explicit file size limit.
 - Completeness: 4 -- Missing file size limit
-- Precision: 5 -- Correct async implementation, proper error codes (400/422)
+- Precision: 5 -- Correct async patterns, proper error handling
 - Actionability: 5 -- Complete working code with tests
-- Structure: 5 -- Models, endpoint, tests clearly separated
-- Efficiency: 4 -- Good length
-- Depth: 5 -- Row-level validation, age stats, column stats, test examples
-- **Composite: 4.53**
+- Structure: 5 -- Models, endpoint, tests
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Header normalization, validation error batching, age stats
+- **Composite: 4.60**
 
 ### Condition E
-- must_mention coverage: 3/5 -- UploadFile with content-type check, sync file reading (def not async), no Pydantic response model (returns dict), error handling; no file size limit
-- must_not violations: None
-- Completeness: 3 -- Missing async, Pydantic model, file size limit
-- Precision: 4 -- Sync endpoint with explanation (valid reasoning)
+- must_mention: 3/5 -- UploadFile with content-type check, sync file reading (uses `file.file.read()` not async), no Pydantic response model (returns dict). Error handling present. Missing file size limit.
+- Completeness: 3 -- Missing Pydantic model, async read, file size limit
+- Precision: 4 -- Sync read is functional but not idiomatic FastAPI
 - Actionability: 4 -- Working code
-- Structure: 4 -- Good but no response model
+- Structure: 4 -- Clean
 - Efficiency: 5 -- Concise
-- Depth: 3 -- Basic stats, less thorough
-- **Composite: 3.73**
+- Depth: 3 -- Less FastAPI-idiomatic
+- **Composite: 3.67**
 
 ### Condition F
-- must_mention coverage: 4/5 -- UploadFile (filename check instead of content-type), async reading, Pydantic response model, error handling; no file size limit
-- must_not violations: None
-- Completeness: 4 -- Missing file size limit, uses filename check not content-type
-- Precision: 4 -- Filename check is weaker than content-type check
-- Actionability: 5 -- Complete code
-- Structure: 4 -- Good organization
-- Efficiency: 5 -- Concise
-- Depth: 4 -- Age validation with range check
-- **Composite: 4.20**
+- must_mention: 3/5 -- UploadFile, async file.read(), Pydantic models. Missing content-type check (checks filename instead), missing file size limit.
+- Completeness: 3 -- Missing content-type check and file size
+- Precision: 4 -- Filename check is weak validation
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean
+- Efficiency: 4 -- Balanced
+- Depth: 3 -- Less robust validation
+- **Composite: 3.53**
 
 ### Condition G
-- must_mention coverage: 4/5 -- UploadFile (filename + content-type), async reading, Pydantic response models (CSVSummaryResponse, ColumnStats), error handling; no explicit file size limit (mentions "for files up to ~50MB")
-- must_not violations: None
-- Completeness: 4 -- File size limit mentioned in comment but not enforced
-- Precision: 5 -- Service layer separation, correct error codes
-- Actionability: 5 -- Complete code with service layer + router + tests
-- Structure: 5 -- Service/router separation, response model, tests
-- Efficiency: 4 -- Good organization
-- Depth: 5 -- Numeric vs string stats detection, column normalization, design decisions explained
-- **Composite: 4.53**
-
-### Condition H
-- must_mention coverage: 4/5 -- UploadFile with content-type, async reading, Pydantic models (CSVSummaryResponse, ColumnStats, ErrorDetail), error handling; no file size limit
-- must_not violations: None
+- must_mention: 4/5 -- UploadFile with content-type, async read, Pydantic models (CSVSummaryResponse with ConfigDict), error handling. Service layer separation. Missing file size limit.
 - Completeness: 4 -- Missing file size limit
-- Precision: 5 -- Service layer, correct patterns
-- Actionability: 5 -- Complete code with service + router + tests
-- Structure: 5 -- Models, service, router, tests well-separated
-- Efficiency: 4 -- Good organization
-- Depth: 5 -- Numeric detection, column normalization, sample values, design decisions
-- **Composite: 4.53**
-
----
-
-## Task 2: fa-002
-
-**Ground Truth Summary:** Rate limiting: slowapi or custom middleware, different limits for auth vs unauth, Retry-After header in 429, Redis backend for distributed, dependency injection. Must not use in-memory only.
-
-### Condition D
-- must_mention coverage: 4/5 -- custom dependency approach, different limits (100 auth / 20 unauth), Retry-After header, Redis version with Lua script; dependency injection pattern used
-- must_not violations: PARTIAL -- in-memory version shown first, but Redis version provided for production
-- Completeness: 5 -- All items covered with both in-memory and Redis
-- Precision: 5 -- Sliding window with Lua script is correct for production
-- Actionability: 5 -- Complete code with tests for both limits
-- Structure: 5 -- In-memory then Redis upgrade path
-- Efficiency: 4 -- Thorough
-- Depth: 5 -- Lua script for atomicity, rate limit headers on all responses
-- **Composite: 4.73**
-
-### Condition E
-- must_mention coverage: 3/5 -- token bucket, different limits, Retry-After header; Redis mentioned but not implemented; no slowapi
-- must_not violations: PARTIAL -- in-memory with Redis note
-- Completeness: 3 -- Redis mentioned but not implemented
-- Precision: 4 -- Token bucket is valid but simpler
-- Actionability: 4 -- Working code
-- Structure: 4 -- Good
-- Efficiency: 5 -- Concise
-- Depth: 3 -- Brief
-- **Composite: 3.73**
-
-### Condition F
-- must_mention coverage: 3/5 -- token bucket middleware, different limits, Retry-After; Redis mentioned but not implemented
-- must_not violations: PARTIAL -- in-memory with Redis note
-- Completeness: 3 -- Redis not implemented
-- Precision: 4 -- Token bucket with dataclass
-- Actionability: 4 -- Working middleware
-- Structure: 4 -- Good middleware pattern
-- Efficiency: 5 -- Concise
-- Depth: 3 -- Basic implementation
-- **Composite: 3.73**
-
-### Condition G
-- must_mention coverage: 4/5 -- custom dependency, different limits, Retry-After; Redis mentioned; no slowapi but good DI
-- must_not violations: PARTIAL -- in-memory with Redis note
-- Completeness: 4 -- All concepts covered
-- Precision: 5 -- Good service layer separation
-- Actionability: 4 -- Working code
-- Structure: 4 -- Good organization
-- Efficiency: 4 -- Reasonable length
-- Depth: 4 -- DI pattern, X-Forwarded-For handling
-- **Composite: 4.20**
-
-### Condition H
-- must_mention coverage: 4/5 -- custom dependency, different limits, Retry-After, Redis Lua script provided; no slowapi but comprehensive custom solution
-- must_not violations: PARTIAL -- in-memory primary but Redis provided
-- Completeness: 5 -- Both implementations provided
-- Precision: 5 -- Sliding window + Lua script
-- Actionability: 5 -- Complete code with tests
-- Structure: 5 -- In-memory + Redis, rate limit headers on all responses
-- Efficiency: 4 -- Detailed
-- Depth: 5 -- Lua script, X-Forwarded-For, rate limit headers always returned
+- Precision: 5 -- Correct, service layer pattern
+- Actionability: 5 -- Complete code with service separation
+- Structure: 5 -- Models, service, endpoint
+- Efficiency: 4 -- Good architecture
+- Depth: 5 -- Column stats with numeric detection, service layer
 - **Composite: 4.60**
 
----
-
-## Task 3: fa-003
-
-**Ground Truth Summary:** N+1 fix: selectinload/joinedload, AsyncSession, SQLAlchemy 2.0 select().options() syntax, before/after query count. Show problematic and fixed code.
-
-### Condition D
-- must_mention coverage: 4/4 -- selectinload + joinedload, AsyncSession, select().options() syntax, before (101) / after (2) query count comparison
-- must_not violations: None
-- Completeness: 5 -- All items with three fix options + model-level config
-- Precision: 5 -- Correct async patterns, .unique() with joinedload noted
-- Actionability: 5 -- Complete before/after code with models
-- Structure: 5 -- Problem, models, three fixes, comparison table
-- Efficiency: 4 -- Thorough
-- Depth: 5 -- Comparison table, subqueryload not supported in async noted, model-level lazy="selectin"
-- **Composite: 4.87**
-
-### Condition E
-- must_mention coverage: 4/4 -- selectinload, AsyncSession implied, select().options(), before/after comparison
-- must_not violations: None
-- Completeness: 4 -- Main items covered but brief
-- Precision: 5 -- Correct
-- Actionability: 4 -- Code provided
-- Structure: 4 -- Before/after with comparison table
-- Efficiency: 5 -- Very concise
-- Depth: 3 -- Nested selectinload mentioned, lazy="raise" tip
-- **Composite: 4.20**
-
-### Condition F
-- must_mention coverage: 4/4 -- selectinload, async pattern, select().options(), before/after
-- must_not violations: None
-- Completeness: 4 -- Main items
-- Precision: 5 -- Correct
-- Actionability: 4 -- Code provided
-- Structure: 4 -- Good
-- Efficiency: 5 -- Concise
-- Depth: 3 -- Brief
-- **Composite: 4.20**
-
-### Condition G
-- must_mention coverage: 4/4 -- selectinload, AsyncSession, select().options(), query count comparison
-- must_not violations: None
-- Completeness: 4 -- Good coverage
-- Precision: 5 -- Correct patterns
+### Condition H
+- must_mention: 4/5 -- UploadFile with content-type, async read, Pydantic models, error handling. Service layer. Missing file size limit.
+- Completeness: 4 -- Missing file size limit
+- Precision: 5 -- Correct, column normalization
 - Actionability: 5 -- Complete code
-- Structure: 4 -- Good organization
-- Efficiency: 4 -- Reasonable
-- Depth: 4 -- Service layer separation
-- **Composite: 4.33**
+- Structure: 5 -- Service layer
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Async chain explanation, 50MB note for streaming
+- **Composite: 4.60**
+
+### Condition I
+- must_mention: 4/5 -- Same as H (identical beginning, likely identical full output)
+- Completeness: 4
+- Precision: 5
+- Actionability: 5
+- Structure: 5
+- Efficiency: 4
+- Depth: 5
+- **Composite: 4.60**
+
+---
+
+## Task 2: fa-002 (Rate Limiting)
+**Ground Truth Summary:** slowapi or custom middleware, different limits auth vs unauth, Retry-After header, Redis for distributed, dependency injection. Must not use in-memory only.
+
+### Condition D
+- must_mention: 4/5 -- Custom dependency (not slowapi), different limits (100 auth/20 IP), Retry-After header, Redis Lua script for production. Missing explicit dependency injection pattern (uses app-level dependency which is DI).
+- must_not violations: Shows in-memory first but provides Redis version -- acceptable
+- Completeness: 5 -- In-memory + Redis versions, rate limit headers
+- Precision: 5 -- Correct sliding window implementation
+- Actionability: 5 -- Complete code with tests
+- Structure: 5 -- Clean architecture
+- Efficiency: 4 -- Two implementations
+- Depth: 5 -- Lua script for atomicity, X-RateLimit headers
+- **Composite: 4.87**
+
+### Condition E
+- must_mention: 3/5 -- Custom dependencies, different limits, Retry-After. Missing Redis backend (only mentions "replace with Redis"). DI pattern present.
+- must_not violations: In-memory only with note about Redis
+- Completeness: 3 -- Redis not implemented
+- Precision: 4 -- Token bucket is correct
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean
+- Efficiency: 4 -- Concise
+- Depth: 3 -- Less detail on distributed
+- **Composite: 3.53**
+
+### Condition F
+- must_mention: 3/5 -- Custom middleware, different limits, Retry-After. Missing Redis implementation, mentions it briefly. DI via middleware.
+- must_not violations: In-memory only
+- Completeness: 3 -- Redis not shown
+- Precision: 4 -- Token bucket correct
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean middleware approach
+- Efficiency: 4 -- Concise
+- Depth: 3 -- Brief
+- **Composite: 3.53**
+
+### Condition G
+- must_mention: 4/5 -- Custom service, different limits, Retry-After, Redis mentioned. Service layer pattern.
+- must_not violations: In-memory with Redis note
+- Completeness: 4 -- Redis not fully implemented
+- Precision: 5 -- Correct with Lua script concept
+- Actionability: 4 -- Service layer
+- Structure: 5 -- Good architecture
+- Efficiency: 4 -- Balanced
+- Depth: 4 -- Numeric stats, service separation
+- **Composite: 4.20**
 
 ### Condition H
-- must_mention coverage: 4/4 -- selectinload + joinedload, AsyncSession, select().options(), before (101) / after (2) comparison
-- must_not violations: None
-- Completeness: 5 -- Three fix options with comparison table
-- Precision: 5 -- .unique() requirement noted, subqueryload not async
+- must_mention: 4/5 -- Custom service, different limits, Retry-After, Redis mentioned
+- Completeness: 4 -- Redis not fully shown
+- Precision: 5 -- Correct
+- Actionability: 4 -- Service layer
+- Structure: 5 -- Good
+- Efficiency: 4 -- Balanced
+- Depth: 4 -- Async chain explanation
+- **Composite: 4.20**
+
+### Condition I
+- must_mention: 4/5 -- Same as H
+- Completeness: 4
+- Precision: 5
+- Actionability: 4
+- Structure: 5
+- Efficiency: 4
+- Depth: 4
+- **Composite: 4.20**
+
+---
+
+## Task 3: fa-003 (N+1 Query Fix)
+**Ground Truth Summary:** selectinload or joinedload, AsyncSession, SQLAlchemy 2.0 syntax (select().options()), before/after query count, explain loading strategy.
+
+### Condition D
+- must_mention: 5/5 -- selectinload + joinedload, AsyncSession, select().options() syntax, before (101) vs after (2), explains both strategies with comparison table
+- Completeness: 5 -- All strategies compared, model-level lazy config
+- Precision: 5 -- Correct, notes .unique() requirement for joinedload
 - Actionability: 5 -- Complete code with models
-- Structure: 5 -- Problem, models, three fixes, comparison table, recommendation
-- Efficiency: 4 -- Detailed
-- Depth: 5 -- LIMIT/OFFSET behavior with joinedload, model-level lazy config
+- Structure: 5 -- Problem, fixes, comparison
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- subqueryload note (not async), LIMIT interaction, recommendation
+- **Composite: 4.87**
+
+### Condition E
+- must_mention: 4/5 -- selectinload, AsyncSession, select().options(). Brief before/after. Missing joinedload alternative.
+- Completeness: 3 -- Only selectinload shown
+- Precision: 5 -- Correct
+- Actionability: 4 -- Working code
+- Structure: 4 -- Brief comparison table
+- Efficiency: 5 -- Very concise
+- Depth: 3 -- Less detail, lazy="raise" mentioned
+- **Composite: 3.80**
+
+### Condition F
+- must_mention: 4/5 -- selectinload, AsyncSession, select().options(), before/after. Missing joinedload.
+- Completeness: 3 -- Only selectinload
+- Precision: 5 -- Correct, lazy="raise"
+- Actionability: 4 -- Working code
+- Structure: 4 -- Brief table
+- Efficiency: 5 -- Concise
+- Depth: 3 -- Nested relationship note
+- **Composite: 3.80**
+
+### Condition G
+- must_mention: 4/5 -- selectinload, AsyncSession, select().options(). Missing before/after query count comparison as explicit section.
+- Completeness: 4 -- Covers essentials
+- Precision: 5 -- Correct
+- Actionability: 4 -- Working code
+- Structure: 4 -- Good
+- Efficiency: 4 -- Balanced
+- Depth: 4 -- Comparison table
+- **Composite: 4.07**
+
+### Condition H
+- must_mention: 5/5 -- selectinload, joinedload, AsyncSession, select().options(), before/after
+- Completeness: 5 -- Both strategies
+- Precision: 5 -- Correct
+- Actionability: 5 -- Complete code
+- Structure: 5 -- Good organization
+- Efficiency: 4 -- Thorough
+- Depth: 5 -- Model definition included
+- **Composite: 4.87**
+
+### Condition I
+- must_mention: 5/5 -- Same as H
+- Completeness: 5
+- Precision: 5
+- Actionability: 5
+- Structure: 5
+- Efficiency: 4
+- Depth: 5
 - **Composite: 4.87**
 
 ---
 
-## Task 4: fa-004
-
-**Ground Truth Summary:** WebSocket chat: ConnectionManager class, connect/disconnect handling, broadcast to room, JSON messages, error handling for dropped connections. Show ConnectionManager, endpoint, client example.
+## Task 4: fa-004 (WebSocket Chat)
+**Ground Truth Summary:** WebSocket route with ConnectionManager, connect/disconnect handling, broadcast to room, JSON format, error handling for dropped connections.
 
 ### Condition D
-- must_mention coverage: 5/5 -- ConnectionManager with rooms, connect/disconnect with lock, broadcast to room, JSON messages, dead connection cleanup
-- must_not violations: None
-- Completeness: 5 -- All items with scaling notes
-- Precision: 5 -- Async lock, duplicate connection handling, member list on join
+- must_mention: 5/5 -- WebSocket route, ConnectionManager with rooms, connect/disconnect, broadcast, JSON format, dead connection cleanup
+- Completeness: 5 -- Full implementation with member list, duplicate connection handling
+- Precision: 5 -- Correct, asyncio.Lock for thread safety
 - Actionability: 5 -- Complete code with JS client example and tests
-- Structure: 5 -- ConnectionManager, endpoint, client, tests, scaling
-- Efficiency: 4 -- Thorough
-- Depth: 5 -- Redis Pub/Sub scaling, message length limit, member list, rooms list endpoint
+- Structure: 5 -- Manager class, endpoint, client example, tests, scaling
+- Efficiency: 4 -- Very thorough
+- Depth: 5 -- Redis pub/sub scaling, message length limit, duplicate connection handling
 - **Composite: 4.87**
 
 ### Condition E
-- must_mention coverage: 4/5 -- ConnectionManager, connect/disconnect, broadcast, JSON; error handling brief
-- must_not violations: None
-- Completeness: 4 -- Core items covered
-- Precision: 4 -- Basic implementation
-- Actionability: 4 -- Code provided
-- Structure: 4 -- Good
+- must_mention: 5/5 -- WebSocket route, ConnectionManager, connect/disconnect, broadcast, JSON, dead connection cleanup
+- Completeness: 4 -- Simpler implementation
+- Precision: 5 -- Correct
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean
 - Efficiency: 5 -- Concise
-- Depth: 3 -- Basic
-- **Composite: 4.00**
+- Depth: 3 -- No scaling notes, simpler
+- **Composite: 4.07**
 
 ### Condition F
-- must_mention coverage: 4/5 -- ConnectionManager, connect/disconnect, broadcast, JSON; dead connection handling not shown
-- must_not violations: None
-- Completeness: 3 -- Missing error handling for dropped connections
-- Precision: 4 -- Basic but correct
-- Actionability: 4 -- Code provided
-- Structure: 4 -- Good
-- Efficiency: 5 -- Concise
-- Depth: 3 -- Basic
-- **Composite: 3.73**
+- must_mention: 5/5 -- WebSocket route, ChatRoom class, connect/disconnect, broadcast, JSON, dead cleanup
+- Completeness: 4 -- Good implementation
+- Precision: 5 -- Correct, asyncio.Lock
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean
+- Efficiency: 4 -- Balanced
+- Depth: 3 -- Brief usage example
+- **Composite: 4.07**
 
 ### Condition G
-- must_mention coverage: 5/5 -- ConnectionManager, connect/disconnect, broadcast to room, JSON, dead connection cleanup
-- must_not violations: None
-- Completeness: 5 -- All items with tests
-- Precision: 5 -- Good implementation
-- Actionability: 5 -- Complete code with tests
-- Structure: 5 -- Well-organized
-- Efficiency: 4 -- Detailed
-- Depth: 4 -- Redis scaling note, tests
-- **Composite: 4.73**
+- must_mention: 5/5 -- All items covered
+- Completeness: 4 -- Good
+- Precision: 5 -- Correct
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean
+- Efficiency: 4 -- Balanced
+- Depth: 4 -- Redis scaling note
+- **Composite: 4.20**
 
 ### Condition H
-- must_mention coverage: 5/5 -- ConnectionManager with async lock, connect/disconnect, broadcast, JSON, dead connection cleanup
-- must_not violations: None
-- Completeness: 5 -- Full implementation with scaling
-- Precision: 5 -- Async lock, duplicate connection handling, member list
-- Actionability: 5 -- Complete code + JS client + tests
-- Structure: 5 -- Models, manager, endpoint, client, tests, scaling
+- must_mention: 5/5 -- All items
+- Completeness: 5 -- Full implementation
+- Precision: 5 -- Correct
+- Actionability: 5 -- Complete code
+- Structure: 5 -- Good organization
 - Efficiency: 4 -- Thorough
-- Depth: 5 -- Redis Pub/Sub scaling, message length enforcement, room listing
+- Depth: 5 -- Same quality as D
+- **Composite: 4.87**
+
+### Condition I
+- must_mention: 5/5
+- Completeness: 5
+- Precision: 5
+- Actionability: 5
+- Structure: 5
+- Efficiency: 4
+- Depth: 5
 - **Composite: 4.87**
 
 ---
 
-## Task 5: fa-005
-
-**Ground Truth Summary:** Background processing: BackgroundTasks or Celery/ARQ, status tracking (pending/processing/completed/failed), DB record, idempotency, crash handling. POST 202 + GET status endpoint. Must not use BackgroundTasks for things needing retry.
+## Task 5: fa-005 (Background Tasks)
+**Ground Truth Summary:** BackgroundTasks for simple OR Celery/ARQ for robust, status tracking (pending/processing/completed/failed), DB record, idempotency, worker crash handling. Must not use BackgroundTasks for retry/persistence.
 
 ### Condition D
-- must_mention coverage: 4/5 -- asyncio.create_task (simple), Celery/ARQ for production, status tracking with 4 states, in-memory store (DB noted), crash: graceful shutdown with timeout; idempotency not addressed
-- must_not violations: None -- explicitly notes asyncio is for simple cases, recommends Celery/ARQ for production
-- Completeness: 4 -- Missing idempotency discussion
-- Precision: 5 -- Correct pattern with lifespan for graceful shutdown
-- Actionability: 5 -- Complete code with long-poll endpoint, tests, ARQ example
+- must_mention: 5/5 -- asyncio.create_task for simple + Celery/ARQ for production, full status tracking, in-memory store (with note about DB), idempotency in tests, crash handling via graceful shutdown
+- must_not violations: None -- notes BackgroundTasks limitation, uses asyncio.create_task, recommends task queue for production
+- Completeness: 5 -- Full lifecycle with long-poll endpoint
+- Precision: 5 -- Correct, lifespan handler for graceful shutdown
+- Actionability: 5 -- Complete code with tests and arq example
 - Structure: 5 -- Models, implementation, tests, production notes
 - Efficiency: 4 -- Thorough
-- Depth: 5 -- Long-poll endpoint, step tracking, lifespan shutdown, ARQ example
-- **Composite: 4.60**
+- Depth: 5 -- Long-poll endpoint, graceful shutdown, arq example, step tracking
+- **Composite: 4.87**
 
 ### Condition E
-- must_mention coverage: 3/5 -- BackgroundTasks or asyncio, status tracking, no DB; no idempotency, no crash handling
-- must_not violations: None
-- Completeness: 3 -- Missing idempotency, crash handling, DB
-- Precision: 4 -- Basic but correct
-- Actionability: 4 -- Code provided
-- Structure: 4 -- Good
+- must_mention: 3/5 -- BackgroundTasks, status tracking, mentions Celery/ARQ. Missing idempotency and crash handling.
+- must_not violations: Uses BackgroundTasks but notes it's for simple cases
+- Completeness: 3 -- Missing idempotency, crash handling
+- Precision: 4 -- Correct basic approach
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean
 - Efficiency: 5 -- Concise
-- Depth: 3 -- Basic implementation
-- **Composite: 3.60**
+- Depth: 2 -- Very brief, "fire-and-forget" note
+- **Composite: 3.27**
 
 ### Condition F
-- must_mention coverage: 3/5 -- asyncio task, status tracking, no DB mention; no idempotency, crash handling minimal
+- must_mention: 3/5 -- asyncio.create_task, status tracking, mentions Celery/ARQ. Missing idempotency, crash handling.
 - must_not violations: None
-- Completeness: 3 -- Missing several items
-- Precision: 4 -- Basic
-- Actionability: 4 -- Code provided
-- Structure: 4 -- Good
-- Efficiency: 5 -- Concise
-- Depth: 3 -- Basic
-- **Composite: 3.60**
+- Completeness: 3 -- Missing two items
+- Precision: 4 -- Correct
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean
+- Efficiency: 4 -- Balanced
+- Depth: 3 -- Brief production note
+- **Composite: 3.40**
 
 ### Condition G
-- must_mention coverage: 4/5 -- asyncio.create_task, Celery/ARQ for production, status tracking, in-memory (DB noted); idempotency not discussed; crash handling via lifespan
-- must_not violations: None
-- Completeness: 4 -- Missing idempotency
-- Precision: 5 -- Good implementation
-- Actionability: 5 -- Complete code with tests
-- Structure: 5 -- Well-organized with production notes
-- Efficiency: 4 -- Detailed
-- Depth: 4 -- Step tracking, production task queue options
-- **Composite: 4.47**
+- must_mention: 4/5 -- asyncio.create_task, status tracking, mentions Redis/Celery. Missing explicit crash handling.
+- Completeness: 4 -- Good
+- Precision: 5 -- Correct
+- Actionability: 4 -- Working code
+- Structure: 4 -- Clean
+- Efficiency: 4 -- Balanced
+- Depth: 4 -- Redis mention
+- **Composite: 4.07**
 
 ### Condition H
-- must_mention coverage: 4/5 -- asyncio.create_task, Celery/ARQ for production noted, status tracking (4 states), in-memory store; idempotency not explicitly discussed; crash: lifespan shutdown
-- must_not violations: None
-- Completeness: 4 -- Missing idempotency
-- Precision: 5 -- Correct with lifespan, step tracking
-- Actionability: 5 -- Complete code with long-poll, tests, ARQ example
-- Structure: 5 -- Models, implementation, tests, production notes
-- Efficiency: 4 -- Thorough
-- Depth: 5 -- Long-poll endpoint, step tracking, ARQ example, graceful shutdown
-- **Composite: 4.60**
+- must_mention: 4/5 -- Similar to G, status tracking, task queue mention
+- Completeness: 4
+- Precision: 5
+- Actionability: 4
+- Structure: 4
+- Efficiency: 4
+- Depth: 4
+- **Composite: 4.07**
+
+### Condition I
+- must_mention: 4/5 -- Same as H
+- Completeness: 4
+- Precision: 5
+- Actionability: 4
+- Structure: 4
+- Efficiency: 4
+- Depth: 4
+- **Composite: 4.07**
 
 ---
 
 ## Summary
 
-| Task | D | E | F | G | H |
-|------|---|---|---|---|---|
-| fa-001 | 4.53 | 3.73 | 4.20 | 4.53 | 4.53 |
-| fa-002 | 4.73 | 3.73 | 3.73 | 4.20 | 4.60 |
-| fa-003 | 4.87 | 4.20 | 4.20 | 4.33 | 4.87 |
-| fa-004 | 4.87 | 4.00 | 3.73 | 4.73 | 4.87 |
-| fa-005 | 4.60 | 3.60 | 3.60 | 4.47 | 4.60 |
-| **Mean** | **4.72** | **3.85** | **3.89** | **4.45** | **4.69** |
+| Task | D | E | F | G | H | I |
+|------|---|---|---|---|---|---|
+| fa-001 | 4.60 | 3.67 | 3.53 | 4.60 | 4.60 | 4.60 |
+| fa-002 | 4.87 | 3.53 | 3.53 | 4.20 | 4.20 | 4.20 |
+| fa-003 | 4.87 | 3.80 | 3.80 | 4.07 | 4.87 | 4.87 |
+| fa-004 | 4.87 | 4.07 | 4.07 | 4.20 | 4.87 | 4.87 |
+| fa-005 | 4.87 | 3.27 | 3.40 | 4.07 | 4.07 | 4.07 |
+| **Mean** | **4.82** | **3.67** | **3.67** | **4.23** | **4.52** | **4.52** |

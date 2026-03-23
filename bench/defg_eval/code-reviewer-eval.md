@@ -1,318 +1,372 @@
-# code-reviewer Evaluation (D/E/F/G/H)
+# code-reviewer Evaluation (D/E/F/G/H/I)
 
-## Task cr-001: Express.js Endpoint Review
+## Task 1: cr-001
 
-**Ground Truth Summary:** Must mention SQL injection, hardcoded JWT secret, no input validation. Must not have style-only complaints without security context. Must have severity labels and fix suggestions.
+**Ground Truth Summary:** SQL injection via string concatenation, hardcoded JWT secret, no input validation. Must not: style-only complaints without security context. Structure: severity labels (CRITICAL/HIGH), file:line references, fix suggestions.
 
 ### Condition D
-- must_mention coverage: 3/3 -- SQL injection, hardcoded JWT secret, no input validation
+- must_mention: 3/3 -- SQL injection, hardcoded JWT secret, no input validation
 - must_not violations: None
-- Code artifacts: N/A (markdown only)
-- Completeness: 5 -- All three must-mentions plus auth check and error handling
-- Precision: 5 -- All findings accurate, severity labels correct (CRITICAL for SQL injection and JWT)
-- Actionability: 5 -- Fix code provided for each finding
+- Completeness: 5 -- All three must_mention items plus additional valid findings (auth, error handling)
+- Precision: 5 -- No false positives, correct severity (CRITICAL for SQL injection and JWT, HIGH for validation)
+- Actionability: 5 -- Code fix snippets for each finding
 - Structure: 5 -- Severity labels, line references, summary table, verdict
-- Efficiency: 4 -- Slightly verbose with additional findings beyond required
-- Depth: 5 -- Explains privilege escalation via role, unhandled rejection details
+- Efficiency: 4 -- Slightly verbose but well-organized
+- Depth: 5 -- Detailed explanation of attack vectors and impact
 - **Composite: 4.87**
 
 ### Condition E
-- must_mention coverage: 3/3 -- SQL injection, hardcoded JWT secret, no input validation
+- must_mention: 3/3 -- SQL injection, hardcoded JWT secret, no input validation
 - must_not violations: None
-- Completeness: 5 -- Covers all required plus error handling and auth
-- Precision: 5 -- All findings accurate, correct severity
-- Actionability: 5 -- Fix code provided
-- Structure: 5 -- Clear severity labels, fix suggestions, verdict
-- Efficiency: 4 -- Clean and concise
-- Depth: 4 -- Good but slightly less detailed than D on exploit scenarios
+- Completeness: 5 -- All items plus auth and error handling
+- Precision: 5 -- Correct severities, no false positives; correctly notes parameterized query is fine in cr-004
+- Actionability: 5 -- Fix suggestions with code
+- Structure: 5 -- Severity labels, verdicts, summary table
+- Efficiency: 4 -- Concise but thorough
+- Depth: 4 -- Good explanations, slightly less detailed than D
 - **Composite: 4.73**
 
 ### Condition F
-- must_mention coverage: 3/3 -- SQL injection, hardcoded JWT secret, no input validation (escalated to CRITICAL with mass assignment)
+- must_mention: 3/3 -- SQL injection, hardcoded JWT secret, no input validation
 - must_not violations: None
-- Completeness: 5 -- All required plus additional valid findings
-- Precision: 5 -- Accurate, properly identifies mass assignment as critical
-- Actionability: 5 -- Fix code provided
-- Structure: 5 -- Clear severity labels, organized
-- Efficiency: 4 -- Good signal-to-noise
-- Depth: 5 -- Identifies mass assignment as separate CRITICAL, notes token bypass
-- **Composite: 4.87**
+- Completeness: 5 -- All items plus mass assignment called out as separate CRITICAL (valid)
+- Precision: 4 -- Elevating input validation to CRITICAL (mass assignment) is defensible but aggressive
+- Actionability: 5 -- Fix snippets provided
+- Structure: 5 -- Clear severity labels, verdicts
+- Efficiency: 4 -- Good length
+- Depth: 5 -- Token returned on creation is a good additional insight
+- **Composite: 4.73**
 
 ### Condition G
-- must_mention coverage: 3/3 -- SQL injection, hardcoded JWT secret, no input validation (merged into one CRITICAL)
+- must_mention: 3/3 -- SQL injection, hardcoded JWT secret, no input validation (combined with auth as one CRITICAL)
 - must_not violations: None
-- Completeness: 5 -- All required findings present
-- Precision: 4 -- Merging input validation into CRITICAL is arguable; ground truth says HIGH
+- Completeness: 5 -- All items covered
+- Precision: 4 -- Combining input validation + auth into one CRITICAL finding is less precise
 - Actionability: 5 -- Fix code provided
-- Structure: 4 -- Less structured than others; severity labels present but grouping is odd
-- Efficiency: 4 -- Reasonably concise
-- Depth: 4 -- Good depth on each finding
-- **Composite: 4.40**
+- Structure: 4 -- Severity labels present but combined findings reduce clarity
+- Efficiency: 4 -- Reasonable length
+- Depth: 4 -- JWT no-expiry is a good addition
+- **Composite: 4.47**
 
 ### Condition H
-- must_mention coverage: 3/3 -- SQL injection, hardcoded JWT secret, no input validation (combined into one CRITICAL)
+- must_mention: 3/3 -- SQL injection, hardcoded JWT secret, no input validation
 - must_not violations: None
-- Completeness: 5 -- All required plus JWT expiry
-- Precision: 4 -- Combining input validation into CRITICAL overrates it slightly
-- Actionability: 5 -- Fix code provided
-- Structure: 5 -- Clean organization, summary table
-- Efficiency: 4 -- Good balance
-- Depth: 5 -- Notes JWT expiry, privilege escalation via role
+- Completeness: 5 -- All items plus JWT no-expiry
+- Precision: 5 -- Correct severities, well-calibrated
+- Actionability: 5 -- Fix code with expiresIn
+- Structure: 5 -- Clear severity labels, code references
+- Efficiency: 4 -- Good length
+- Depth: 5 -- JWT expiry and mass assignment separately noted
+- **Composite: 4.87**
+
+### Condition I
+- must_mention: 3/3 -- SQL injection, hardcoded JWT secret, no input validation
+- must_not violations: None
+- Completeness: 5 -- Identical to H (same output)
+- Precision: 5 -- Same as H
+- Actionability: 5 -- Same as H
+- Structure: 5 -- Same as H
+- Efficiency: 4 -- Same as H
+- Depth: 5 -- Same as H
+- **Composite: 4.87**
+
+---
+
+## Task 2: cr-002
+
+**Ground Truth Summary:** useEffect missing dependency array (infinite loop), missing key prop, setUsers/props state mismatch. Must not: false complaints about missing error handling if context doesn't require it.
+
+### Condition D
+- must_mention: 3/3 -- infinite loop, missing key, state mismatch (setUsers undefined)
+- must_not violations: Minor -- complains about missing error handling and loading state (borderline, context is ambiguous)
+- Completeness: 5 -- All three core issues found
+- Precision: 4 -- Error handling and loading state complaints are noise per must_not
+- Actionability: 5 -- Fix code provided for each
+- Structure: 5 -- Severity per finding, verdict
+- Efficiency: 4 -- Slightly verbose
+- Depth: 5 -- Good explanation of each issue
+- **Composite: 4.60**
+
+### Condition E
+- must_mention: 3/3 -- All three found
+- must_not violations: Minor -- mentions error handling and null crash
+- Completeness: 5 -- All found
+- Precision: 4 -- Same minor must_not concern
+- Actionability: 4 -- Fix suggestions present but less detailed
+- Structure: 5 -- Good severity labels
+- Efficiency: 5 -- More concise
+- Depth: 4 -- Adequate
+- **Composite: 4.47**
+
+### Condition F
+- must_mention: 3/3 -- All three found
+- must_not violations: Minor -- error/loading and null reference mentioned
+- Completeness: 5 -- All found
+- Precision: 4 -- Same noise
+- Actionability: 5 -- Good fix suggestions
+- Structure: 5 -- Severity labels, verdicts
+- Efficiency: 4 -- Good
+- Depth: 4 -- Adequate
+- **Composite: 4.47**
+
+### Condition G
+- must_mention: 3/3 -- All three found
+- must_not violations: Minor -- error handling, null reference mentioned
+- Completeness: 5 -- All found
+- Precision: 4 -- Same
+- Actionability: 5 -- Fix code
+- Structure: 4 -- Verdict says "2 HIGH issues, 1 bug" -- unusual labeling
+- Efficiency: 4 -- Good
+- Depth: 4 -- Adequate
+- **Composite: 4.33**
+
+### Condition H
+- must_mention: 3/3 -- All three found (setUsers elevated to CRITICAL)
+- must_not violations: Minor -- error handling mentioned
+- Completeness: 5 -- All found
+- Precision: 4 -- Same noise; setUsers as CRITICAL is defensible
+- Actionability: 5 -- Good fix code
+- Structure: 5 -- Clear labels
+- Efficiency: 4 -- Good
+- Depth: 5 -- Good depth on state ownership issue
+- **Composite: 4.60**
+
+### Condition I
+- must_mention: 3/3 -- Same as H
+- must_not violations: Minor -- same
+- Completeness: 5
+- Precision: 4
+- Actionability: 5
+- Structure: 5
+- Efficiency: 4
+- Depth: 5
 - **Composite: 4.60**
 
 ---
 
-## Task cr-002: React UserList Component
+## Task 3: cr-003
 
-**Ground Truth Summary:** Must mention useEffect missing dependency array (infinite loop), missing key prop, setUsers/props state mismatch. Must not have false complaints about missing error handling if context doesn't require it.
+**Ground Truth Summary:** Race condition (no transaction/lock), no audit trail. Must not: "missing type hints" or "missing docstring". Structure: CRITICAL for race condition, HIGH for audit.
 
 ### Condition D
-- must_mention coverage: 3/3 -- infinite loop, missing key, setUsers undefined
-- must_not violations: Minor -- includes error handling and loading state complaints, though these are valid in context
-- Completeness: 5 -- All three required findings plus valid additional ones
-- Precision: 4 -- Error handling complaints are reasonable but borderline per must_not
-- Actionability: 5 -- Fix code provided for each
-- Structure: 5 -- Severity per finding, approval recommendation (BLOCK)
-- Efficiency: 4 -- Slightly verbose
-- Depth: 4 -- Good identification of state mismatch
+- must_mention: 2/2 -- Race condition, no audit trail
+- must_not violations: None (no type hints or docstring complaints)
+- Completeness: 5 -- Both found plus additional valid findings
+- Precision: 4 -- Audit trail rated MEDIUM not HIGH (ground truth says HIGH)
+- Actionability: 5 -- Fix code with SELECT FOR UPDATE
+- Structure: 4 -- Race condition CRITICAL (correct), audit MEDIUM (should be HIGH)
+- Efficiency: 4 -- Good
+- Depth: 5 -- Excellent race condition explanation
 - **Composite: 4.47**
 
 ### Condition E
-- must_mention coverage: 3/3 -- infinite loop (CRITICAL), setUsers undefined (HIGH), missing keys (HIGH)
-- must_not violations: Minor -- mentions error handling
-- Completeness: 5 -- All required covered
-- Precision: 5 -- Accurate findings, correct that useEffect is CRITICAL
-- Actionability: 5 -- Fix code provided
-- Structure: 5 -- Clean severity labels, verdict
-- Efficiency: 4 -- Concise
-- Depth: 4 -- Good explanation of state ownership confusion
-- **Composite: 4.73**
+- must_mention: 2/2 -- Both found
+- must_not violations: None
+- Completeness: 5 -- Both plus valid extras
+- Precision: 5 -- Race CRITICAL, audit HIGH (matches ground truth)
+- Actionability: 5 -- Both SQL options provided
+- Structure: 5 -- Correct severity mapping
+- Efficiency: 4 -- Good
+- Depth: 5 -- Good detail
+- **Composite: 4.87**
 
 ### Condition F
-- must_mention coverage: 3/3 -- infinite loop, setUsers undefined, missing keys
-- must_not violations: Minor -- mentions error/loading state
-- Completeness: 5 -- All required
-- Precision: 5 -- Accurate
-- Actionability: 5 -- Fix code provided
-- Structure: 5 -- Good organization
-- Efficiency: 4 -- Clean
-- Depth: 4 -- Explains state confusion well
+- must_mention: 2/2 -- Both found
+- must_not violations: None
+- Completeness: 5 -- Both found
+- Precision: 5 -- Correct severities
+- Actionability: 5 -- Fix code
+- Structure: 5 -- Correct severity labels
+- Efficiency: 4 -- Good
+- Depth: 5 -- TOCTOU terminology used, good detail
+- **Composite: 4.87**
+
+### Condition G
+- must_mention: 2/2 -- Both found
+- must_not violations: None
+- Completeness: 5 -- Both found
+- Precision: 4 -- Race condition labeled HIGH not CRITICAL, audit MEDIUM not HIGH. Verdict WARNING not BLOCK
+- Actionability: 5 -- Fix code
+- Structure: 3 -- Severity mapping inconsistent with ground truth
+- Efficiency: 4 -- Good
+- Depth: 4 -- Adequate
+- **Composite: 4.13**
+
+### Condition H
+- must_mention: 2/2 -- Both found
+- must_not violations: None
+- Completeness: 5 -- Both found
+- Precision: 5 -- Race CRITICAL, audit HIGH
+- Actionability: 5 -- Multiple fix options
+- Structure: 5 -- Correct severities
+- Efficiency: 4 -- Good
+- Depth: 5 -- Excellent TOCTOU explanation
+- **Composite: 4.87**
+
+### Condition I
+- must_mention: 2/2 -- Same as H
+- must_not violations: None
+- Completeness: 5
+- Precision: 5
+- Actionability: 5
+- Structure: 5
+- Efficiency: 4
+- Depth: 5
+- **Composite: 4.87**
+
+---
+
+## Task 4: cr-004
+
+**Ground Truth Summary:** No auth/authz check, returns 200 on error, no method check (GET for destructive op). Must not: "SQL injection" (query IS parameterized). Structure: CRITICAL for missing auth, HIGH for error handling.
+
+### Condition D
+- must_mention: 3/3 -- No auth, 200 on error, no method check
+- must_not violations: None (correctly avoids false SQL injection claim)
+- Completeness: 5 -- All three found plus id validation, rows affected check
+- Precision: 5 -- No SQL injection false positive; correct severities
+- Actionability: 5 -- Fix code for each
+- Structure: 5 -- CRITICAL for auth and GET, HIGH for error handling
+- Efficiency: 4 -- Good
+- Depth: 5 -- CSRF via img tag explained
+- **Composite: 4.87**
+
+### Condition E
+- must_mention: 3/3 -- All found
+- must_not violations: None -- explicitly notes parameterized query is correct
+- Completeness: 5 -- All found
+- Precision: 5 -- Correct; positive note about parameterized query
+- Actionability: 5 -- Fix code
+- Structure: 4 -- Auth labeled HIGH not CRITICAL (ground truth says CRITICAL)
+- Efficiency: 4 -- Good
+- Depth: 4 -- Good but auth severity underrated
+- **Composite: 4.47**
+
+### Condition F
+- must_mention: 3/3 -- All found
+- must_not violations: None
+- Completeness: 5 -- All found plus soft delete consideration
+- Precision: 5 -- CRITICAL for auth, correct
+- Actionability: 5 -- Fix code
+- Structure: 5 -- Correct severity mapping
+- Efficiency: 4 -- Good
+- Depth: 4 -- Good
 - **Composite: 4.73**
 
 ### Condition G
-- must_mention coverage: 3/3 -- infinite loop (HIGH, should be higher), setUsers undefined (HIGH), missing keys (HIGH)
-- must_not violations: Minor -- mentions loading/error state
-- Completeness: 5 -- All required
-- Precision: 4 -- Infinite loop labeled HIGH rather than CRITICAL; hedges on auth caveat
-- Actionability: 4 -- Fix code provided but less detailed
-- Structure: 4 -- Severity labels present, less structured
-- Efficiency: 4 -- Concise
-- Depth: 3 -- Less depth on state mismatch explanation
+- must_mention: 3/3 -- All found
+- must_not violations: None -- correctly notes parameterized query
+- Completeness: 5 -- All found
+- Precision: 4 -- Auth CRITICAL correct, but method check only MEDIUM
+- Actionability: 5 -- Fix code
+- Structure: 4 -- Method check severity too low
+- Efficiency: 4 -- Good
+- Depth: 4 -- Adequate
+- **Composite: 4.33**
+
+### Condition H
+- must_mention: 3/3 -- All found
+- must_not violations: None
+- Completeness: 5 -- All found plus soft delete, response body
+- Precision: 5 -- Both auth and method check CRITICAL
+- Actionability: 5 -- Fix code
+- Structure: 5 -- Correct severity mapping
+- Efficiency: 4 -- Good
+- Depth: 5 -- CSRF via img tag well-explained
+- **Composite: 4.87**
+
+### Condition I
+- must_mention: 3/3 -- Same as H
+- must_not violations: None
+- Completeness: 5
+- Precision: 5
+- Actionability: 5
+- Structure: 5
+- Efficiency: 4
+- Depth: 5
+- **Composite: 4.87**
+
+---
+
+## Task 5: cr-005
+
+**Ground Truth Summary:** Deleting from Map during iteration (may cause issues). Must not: complaints about unchanged get() method, "missing return type" on cleanup. Structure: only review changed code unless CRITICAL.
+
+### Condition D
+- must_mention: 1/1 -- Map deletion during iteration flagged
+- must_not violations: Minor -- mentions get() not removing expired entries (but notes it's unchanged code, for context). Missing set() noted but marked LOW.
+- Completeness: 4 -- Main issue found, but also reviews unchanged code
+- Precision: 4 -- Comments on get() and missing set() are technically violations of "only review changed code" spirit
+- Actionability: 5 -- Two-pass fix provided
+- Structure: 4 -- Reviews beyond changed lines
+- Efficiency: 3 -- Some noise from reviewing unchanged code
+- Depth: 5 -- Nuanced: notes it's spec-safe but fragile
 - **Composite: 4.07**
 
-### Condition H
-- must_mention coverage: 3/3 -- infinite loop (CRITICAL), setUsers undefined (CRITICAL), missing keys (HIGH)
-- must_not violations: Minor -- mentions error handling
-- Completeness: 5 -- All required
-- Precision: 5 -- Accurate severity classification
-- Actionability: 5 -- Fix code provided
-- Structure: 5 -- Well organized
-- Efficiency: 4 -- Good
-- Depth: 5 -- Excellent explanation of state ownership confusion
-- **Composite: 4.87**
-
----
-
-## Task cr-003: Python Payment Refund
-
-**Ground Truth Summary:** Must mention race condition (CRITICAL) and no audit trail (HIGH). Must not complain about missing type hints or docstrings.
-
-### Condition D
-- must_mention coverage: 2/2 -- race condition (CRITICAL), no audit trail (MEDIUM, should be HIGH)
-- must_not violations: None -- no type hints or docstring complaints
-- Completeness: 5 -- Both required plus input validation and error handling
-- Precision: 4 -- Audit trail downgraded to MEDIUM vs expected HIGH
-- Actionability: 5 -- Fix code with SELECT FOR UPDATE
-- Structure: 5 -- Correct CRITICAL for race condition
-- Efficiency: 4 -- Good signal-to-noise
-- Depth: 5 -- Excellent explanation of TOCTOU race
-- **Composite: 4.53**
-
 ### Condition E
-- must_mention coverage: 2/2 -- race condition (CRITICAL), no audit trail (HIGH)
-- must_not violations: None
-- Completeness: 5 -- Both required plus input validation, transaction wrapping
-- Precision: 5 -- Correct severity for both
-- Actionability: 5 -- Atomic UPDATE fix with WHERE guard
-- Structure: 5 -- Proper severity labels
-- Efficiency: 4 -- Clean
-- Depth: 5 -- Good explanation of negative amount vulnerability
-- **Composite: 4.87**
+- must_mention: 1/1 -- Found
+- must_not violations: None -- correctly states it's spec-safe, no complaints about get() or return type
+- Completeness: 4 -- Main issue found
+- Precision: 5 -- Correctly identifies as MEDIUM, notes spec compliance. No false positives.
+- Actionability: 4 -- Suggests comment or two-pass approach
+- Structure: 5 -- Approves the code, correct verdict
+- Efficiency: 5 -- Concise, focused on changed code
+- Depth: 4 -- Good nuance about spec compliance
+- **Composite: 4.47**
 
 ### Condition F
-- must_mention coverage: 2/2 -- race condition (CRITICAL renamed HIGH), audit trail (HIGH)
-- must_not violations: None
-- Completeness: 5 -- Both required
-- Precision: 4 -- Race condition labeled HIGH, ground truth says CRITICAL
-- Actionability: 5 -- Fix code provided
-- Structure: 4 -- Severity present but race condition underrated
-- Efficiency: 4 -- Good
-- Depth: 4 -- Good TOCTOU explanation
-- **Composite: 4.33**
-
-### Condition G
-- must_mention coverage: 2/2 -- race condition (HIGH, should be CRITICAL), audit trail (MEDIUM, should be HIGH)
-- must_not violations: None
-- Completeness: 5 -- Both required
-- Precision: 3 -- Both findings underrated in severity
-- Actionability: 5 -- Fix code provided
-- Structure: 4 -- Severity labels present but miscalibrated
-- Efficiency: 4 -- Concise
-- Depth: 4 -- Decent TOCTOU explanation
-- **Composite: 3.87**
-
-### Condition H
-- must_mention coverage: 2/2 -- race condition (CRITICAL), audit trail (HIGH)
-- must_not violations: None
-- Completeness: 5 -- Both required plus extensive additional findings
-- Precision: 5 -- Correct severity for both
-- Actionability: 5 -- Two fix options (atomic UPDATE and SELECT FOR UPDATE)
-- Structure: 5 -- Well organized
-- Efficiency: 4 -- Good
-- Depth: 5 -- Detailed TOCTOU explanation with both fix approaches
-- **Composite: 4.87**
-
----
-
-## Task cr-004: Go DeleteUser Handler
-
-**Ground Truth Summary:** Must mention no auth (CRITICAL), returns 200 on error (HIGH), no method check. Must NOT claim SQL injection (parameterized query is correct).
-
-### Condition D
-- must_mention coverage: 3/3 -- no auth (CRITICAL), 200 on error (HIGH), no method check (CRITICAL)
-- must_not violations: None -- no SQL injection false positive
-- Completeness: 5 -- All three plus input validation and rows affected check
-- Precision: 5 -- Correctly avoids SQL injection trap
-- Actionability: 5 -- Fix code for each finding
-- Structure: 5 -- Proper severity labels
-- Efficiency: 4 -- Good
-- Depth: 5 -- Explains CSRF vector via GET, link prefetch
-- **Composite: 4.87**
-
-### Condition E
-- must_mention coverage: 3/3 -- no auth (HIGH, should be CRITICAL), 200 on error (HIGH), no method check (HIGH)
-- must_not violations: None -- explicitly notes parameterized query is correct
-- Completeness: 5 -- All required
-- Precision: 4 -- Auth finding should be CRITICAL not HIGH per ground truth
-- Actionability: 5 -- Fix code provided
-- Structure: 4 -- Severity present but auth underrated
-- Efficiency: 5 -- Very clean, includes positive observation
-- Depth: 4 -- Good CSRF explanation
-- **Composite: 4.40**
-
-### Condition F
-- must_mention coverage: 3/3 -- no auth (CRITICAL), 200 on error (HIGH), no method check (HIGH)
-- must_not violations: None
-- Completeness: 5 -- All required plus soft delete consideration
-- Precision: 5 -- Correct severity, avoids SQL injection trap
-- Actionability: 5 -- Fix code provided
-- Structure: 5 -- Well organized
-- Efficiency: 4 -- Good
-- Depth: 5 -- CSRF via image tag, soft delete suggestion
-- **Composite: 4.87**
-
-### Condition G
-- must_mention coverage: 3/3 -- no auth (CRITICAL), 200 on error (HIGH), no method check (MEDIUM, should be higher)
-- must_not violations: None
-- Completeness: 5 -- All required
-- Precision: 4 -- Method check underrated at MEDIUM
-- Actionability: 5 -- Fix code provided
-- Structure: 4 -- Present but method check severity off
-- Efficiency: 4 -- Good
-- Depth: 4 -- Notes CSRF concern for method check
-- **Composite: 4.33**
-
-### Condition H
-- must_mention coverage: 3/3 -- no auth (CRITICAL), 200 on error (HIGH), no method check (CRITICAL)
-- must_not violations: None
-- Completeness: 5 -- All required plus input validation, response body
-- Precision: 5 -- Correct severity, avoids SQL injection trap
-- Actionability: 5 -- Fix code provided
-- Structure: 5 -- Well organized, summary table
-- Efficiency: 4 -- Good
-- Depth: 5 -- Detailed CSRF attack chain, image tag example
-- **Composite: 4.87**
-
----
-
-## Task cr-005: TypeScript Cache Cleanup
-
-**Ground Truth Summary:** Must mention deleting from Map during iteration. Must NOT complain about unchanged get() method or missing return type.
-
-### Condition D
-- must_mention coverage: 1/1 -- Map deletion during iteration (HIGH)
-- must_not violations: Mild -- mentions get() method (labeled "noting for context, not blocking") and missing set() method
-- Completeness: 4 -- Main finding plus some noise
-- Precision: 4 -- Notes Map spec safety but still flags HIGH; get() mention is borderline violation
-- Actionability: 5 -- Two-pass fix code provided
-- Structure: 5 -- Proper focus on changed code
-- Efficiency: 3 -- Mentions unchanged code items
-- Depth: 5 -- Correct nuance about ES2015 spec
-- **Composite: 4.27**
-
-### Condition E
-- must_mention coverage: 1/1 -- Map deletion during iteration (MEDIUM)
-- must_not violations: Minor -- mentions cleanup() access modifier (LOW) and return type (LOW)
-- Completeness: 4 -- Main finding covered
-- Precision: 5 -- Correctly notes this is spec-compliant, not a bug; mentions return type as LOW
-- Actionability: 4 -- Suggests comment; two-pass fix offered
-- Structure: 5 -- Clean, positive observations included
-- Efficiency: 4 -- Good balance
-- Depth: 5 -- Excellent nuance about ES2015 Map behavior
-- **Composite: 4.53**
-
-### Condition F
-- must_mention coverage: 1/1 -- Map deletion during iteration (MEDIUM)
-- must_not violations: Minor -- mentions missing set method and cleanup visibility
-- Completeness: 4 -- Main finding covered
-- Precision: 5 -- Correctly notes spec compliance
+- must_mention: 1/1 -- Found
+- must_not violations: None -- mentions missing set but in low priority
+- Completeness: 4 -- Main issue found
+- Precision: 5 -- Correct severity, no false positives about get()
 - Actionability: 4 -- Two-pass fix suggested
-- Structure: 5 -- Clean organization
-- Efficiency: 4 -- Some noise about missing set
-- Depth: 5 -- Good nuance
-- **Composite: 4.53**
+- Structure: 5 -- Approve verdict correct
+- Efficiency: 5 -- Focused
+- Depth: 4 -- Good
+- **Composite: 4.47**
 
 ### Condition G
-- must_mention coverage: 1/1 -- Map deletion during iteration (MEDIUM)
+- must_mention: 1/1 -- Found
+- must_not violations: None
+- Completeness: 4 -- Main issue found
+- Precision: 5 -- Correctly notes spec-safe, labels MEDIUM
+- Actionability: 4 -- Comment suggestion
+- Structure: 5 -- APPROVE verdict
+- Efficiency: 5 -- Concise
+- Depth: 5 -- Detailed spec citation (Section 24.1.5.8)
+- **Composite: 4.53**
+
+### Condition H
+- must_mention: 1/1 -- Found
 - must_not violations: None -- no complaints about get() or return type
-- Completeness: 4 -- Main finding covered
-- Precision: 5 -- Correctly identifies spec compliance, nuanced
-- Actionability: 4 -- Two-pass fix suggested
-- Structure: 5 -- Clean, focused on changed lines
-- Efficiency: 5 -- Minimal noise
-- Depth: 5 -- Excellent spec reference
-- **Composite: 4.67**
+- Completeness: 4 -- Main issue found
+- Precision: 5 -- Labeled HIGH but notes spec-safe; technically HIGH is too severe for spec-defined safe behavior
+- Actionability: 5 -- Two-pass fix code
+- Structure: 4 -- WARNING verdict (not APPROVE) -- slightly pessimistic
+- Efficiency: 4 -- Good
+- Depth: 5 -- Excellent nuance
+- **Composite: 4.47**
 
-### Condition H
-- must_mention coverage: 1/1 -- Map deletion during iteration (HIGH)
-- must_not violations: Minor -- mentions missing set method and visibility
-- Completeness: 4 -- Main finding covered
-- Precision: 5 -- Correctly notes spec safety with nuance
-- Actionability: 5 -- Two-pass fix code provided
-- Structure: 5 -- Clean, focused on changed code
-- Efficiency: 4 -- Slight noise about set method
-- Depth: 5 -- Good nuance about maintainability risk
-- **Composite: 4.67**
+### Condition I
+- must_mention: 1/1 -- Same as H
+- must_not violations: None
+- Completeness: 4
+- Precision: 5
+- Actionability: 5
+- Structure: 4
+- Efficiency: 4
+- Depth: 5
+- **Composite: 4.47**
 
 ---
 
 ## Summary
 
-| Task | D | E | F | G | H |
-|------|---|---|---|---|---|
-| cr-001 | 4.87 | 4.73 | 4.87 | 4.40 | 4.60 |
-| cr-002 | 4.47 | 4.73 | 4.73 | 4.07 | 4.87 |
-| cr-003 | 4.53 | 4.87 | 4.33 | 3.87 | 4.87 |
-| cr-004 | 4.87 | 4.40 | 4.87 | 4.33 | 4.87 |
-| cr-005 | 4.27 | 4.53 | 4.53 | 4.67 | 4.67 |
-| **Mean** | **4.60** | **4.65** | **4.67** | **4.27** | **4.78** |
+| Task | D | E | F | G | H | I |
+|------|---|---|---|---|---|---|
+| cr-001 | 4.87 | 4.73 | 4.73 | 4.47 | 4.87 | 4.87 |
+| cr-002 | 4.60 | 4.47 | 4.47 | 4.33 | 4.60 | 4.60 |
+| cr-003 | 4.47 | 4.87 | 4.87 | 4.13 | 4.87 | 4.87 |
+| cr-004 | 4.87 | 4.47 | 4.73 | 4.33 | 4.87 | 4.87 |
+| cr-005 | 4.07 | 4.47 | 4.47 | 4.53 | 4.47 | 4.47 |
+| **Mean** | **4.58** | **4.60** | **4.65** | **4.36** | **4.74** | **4.74** |
