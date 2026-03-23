@@ -2,12 +2,6 @@
 
 Empirical research on what makes AI agent instructions effective. Based on 5 agent versions, 7 experimental conditions, 420+ LLM-judged outputs, 12 specialized agents, and external research synthesis.
 
-## Essential Reading
-
-Start with the official Claude Code documentation: **https://code.claude.com/docs/**
-
-Several of our key findings originate from or are confirmed by Anthropic's official guidance — particularly the CLAUDE.md best practices ("would removing this cause mistakes?"), the 4.6 proactive behavior change (don't add "be thorough"), and the verification quality multiplier. Read the docs first, then use this research to go deeper.
-
 ## Research Synopsis
 
 We iteratively designed, tested, and evaluated agent description files (system prompts) for Claude Code across 12 specialized agents (code-reviewer, security-reviewer, tdd-guide, fastapi-pro, etc.). Each version was blindly evaluated against ground-truth task rubrics using an LLM-as-judge methodology.
@@ -252,6 +246,12 @@ bench/                         # Evaluation tasks and scoreboards
   defg_eval/                   # v3 evaluation
   eval_defghij/                # v5 evaluation (final)
 ```
+
+## Essential Reading
+
+Start with the official Claude Code documentation: **https://code.claude.com/docs/**
+
+Several of our key findings originate from or are confirmed by Anthropic's official guidance — particularly the CLAUDE.md best practices ("would removing this cause mistakes?"), the 4.6 proactive behavior change (don't add "be thorough"), and the verification quality multiplier. Read the docs first, then use this research to go deeper.
 
 ## Meta-Lesson
 
