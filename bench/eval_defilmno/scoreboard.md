@@ -4,18 +4,20 @@
 **Method:** LLM-as-judge, 6 dimensions (Precision, Completeness, Actionability, Structure, Efficiency, Depth), composite scoring per task
 **Outputs:** 480 (12 agents x 5 tasks x 8 conditions)
 
-**Conditions (identities unknown -- user runs them blind):**
+**Conditions:**
 
-| Code | Description | Agent Lines (avg) | Code Artifacts |
-|------|------------|-------------------|----------------|
-| D | v1 agents | 106 | None |
-| E | v2 agents | 153 | JS 103 tests |
-| F | bare (no agents) | -- | TS 74 tests |
-| I | v4/v5-partial agents | 71 | JS 105 tests |
-| L | unknown | -- | None (9671 lines output) |
-| M | unknown | -- | None (7785 lines output) |
-| N | unknown | -- | JS 61 tests (__tests__/) |
-| O | unknown | -- | JS 67 tests (src/__tests__/) |
+| Code | Description | Code Artifacts |
+|------|------------|----------------|
+| D | v1 agents (hand-written, 106 lines avg) | None |
+| E | v2 agents (hand-written, over-constrained, 153 lines avg) | JS 103 tests |
+| F | bare (no agents) | TS 74 tests |
+| I | v4/v5-partial agents (hand-written, 71 lines avg) | JS 105 tests |
+| L | **agent-creator round 1** — initial rewrite by plugin | None |
+| M | **agent-creator round 2** — targeted improvements after audit | None |
+| N | **agent-creator round 3** — polish after audit | JS 61 tests |
+| O | **agent-creator round 4** — final polish after audit | JS 67 tests |
+
+L/M/N/O were produced by consecutive runs of the agent-creator plugin, each followed by an audit (see `tooling/claude-creator-post{1,2,3,4}-audit.md`).
 
 ---
 
@@ -147,6 +149,32 @@ All four new conditions outperform bare (F = 4.540) and v2 (E = 4.408). Three of
 
 ---
 
+## Agent-Creator Iteration Trajectory
+
+L→M→N→O represent 4 consecutive rounds of the agent-creator plugin (create/improve + audit).
+
+| Round | Condition | Grand Mean | Delta from prev | Delta from D (v1) |
+|-------|-----------|-----------|-----------------|-------------------|
+| 1 (initial rewrite) | L | **4.661** | — | -0.022 |
+| 2 (targeted fixes) | M | 4.606 | -0.055 | -0.077 |
+| 3 (polish) | N | 4.569 | -0.037 | -0.114 |
+| 4 (final polish) | O | 4.633 | +0.064 | -0.050 |
+
+**The trajectory is NOT monotonically improving.** Round 1 (L) was the best. Rounds 2-3 degraded. Round 4 partially recovered.
+
+**Why the initial rewrite was best:** L produced the most thorough output (9671 lines) with no code artifacts — similar to v1's approach. The agent-creator's first pass successfully captured domain knowledge without over-constraining.
+
+**Why rounds 2-3 degraded:** Each audit flagged "issues" that led to "improvements" which actually introduced:
+- must_not violations on code review (type hints for unchanged code) — introduced in M, persisted through N/O
+- Reduced code-reviewer scores: L=4.76, M=4.35, N=4.24, O=4.36
+- The audit-improve loop polished format at the expense of substance
+
+**Why round 4 partially recovered:** O recovered on implementation tasks (fastapi-pro: 4.71, documentation-pro: 4.75) but the code review regression persisted.
+
+**The lesson:** Iterative auditing can over-polish agents. The first rewrite captured the highest-value changes. Subsequent rounds introduced the same over-constraining pattern we saw in v2 — optimizing for rubric compliance rather than output quality. The audit tool needs a "do no harm" check: if the current agent already scores well, stop iterating.
+
+---
+
 ## Key Findings
 
 1. **D (v1) remains the overall winner** with a grand mean of 4.683, but the margin over L is razor-thin (0.022). V1's advantage is concentrated in java-pro (+0.16 over L) and websocket-engineer (+0.13 over L).
@@ -171,14 +199,16 @@ All four new conditions outperform bare (F = 4.540) and v2 (E = 4.408). Three of
 
 ## Recommendations
 
-1. **If L's identity is revealed as a new agent variant:** It should be considered for promotion. Its profile is nearly identical to v1 with no systematic weaknesses.
+1. **The agent-creator plugin works.** Its round 1 output (L: 4.661) nearly matches hand-crafted v1 (D: 4.683) — a gap of only 0.022. This is remarkable: an automated tool produced agents competitive with the best hand-tuned version.
 
-2. **O is the best choice for implementation-heavy workflows** (FastAPI, full-stack, documentation). Its code quality and architectural patterns are the best observed.
+2. **Stop after round 1.** The iteration trajectory shows diminishing and then negative returns. Round 1 captures the highest-value changes. Subsequent audit-improve cycles over-polish, introducing the same over-constraining pattern that killed v2.
 
-3. **Address the must_not violation pattern in M/N/O.** These conditions need explicit guidance to avoid reviewing unchanged code in code review tasks. This is a low-hanging improvement worth ~0.3 points on affected tasks.
+3. **Add a "do no harm" check to the agent-creator.** If an agent already scores well on the rubric, the audit should say "no changes needed" rather than finding things to polish. The current rubric incentivizes changes even when the agent is already good.
 
-4. **For code review tasks specifically:** D (v1) and I (v4/v5) remain the strongest choices. L is close behind. M/N/O should not be preferred for code review until the type-hints bias is resolved.
+4. **Fix the code review must_not regression.** Rounds 2-4 (M/N/O) introduced type-hints complaints for unchanged code. The agent-creator needs an explicit "only review changed code" rule in its code-reviewer template.
 
-5. **E (v2) should be deprecated** as confirmed by both this evaluation and the prior DEF/DEFG evaluations. It underperforms bare on multiple agents.
+5. **Use L (round 1) agents as the new production baseline.** They match v1 quality, were produced automatically, and can be regenerated for any new domain.
 
-6. **Consider combining L's thoroughness with O's implementation quality** for a hybrid approach: L-style agents for review/analysis, O-style for code generation.
+6. **For implementation tasks, O (round 4) is strongest.** fastapi-pro (4.71) and documentation-pro (4.75) are best-in-class. Consider a hybrid: L-style for review agents, O-style for implementation agents.
+
+7. **E (v2) should be deprecated** — confirmed across all evaluations.

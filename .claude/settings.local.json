@@ -27,7 +27,8 @@
       "Bash",
       "Read",
       "Bash(git ls-tree:*)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)"
     ]
   }
 }
