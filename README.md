@@ -1,6 +1,6 @@
 # How to Write Agent Descriptions and CLAUDE.md for Claude Code
 
-Empirical research on what makes AI agent instructions effective. Based on 5 agent versions, 7 experimental conditions, 420+ LLM-judged outputs, 12 specialized agents, and external research synthesis.
+Empirical research on what makes AI agent instructions effective. Based on 5 agent versions, multiple experimental conditions, 1800+ LLM-judged outputs across Sonnet 4.6 and GLM 4.7, 12 specialized agents, and external research synthesis.
 
 ## Research Synopsis
 
@@ -55,6 +55,37 @@ Full guide with evidence for every recommendation. Key takeaways:
 - No feedback loop (implementation agents need browser preview / test execution)
 - Context window degradation (fresh sessions per feature, compact at 70%)
 - Model knowledge currency (stale facts in instructions are worse than no instructions)
+
+### Execution Model Matters More Than Agent Instructions
+
+Tested Sonnet 4.6 vs GLM 4.7 with identical agent descriptions (5 agent versions × 2 models = 600 outputs). See [full findings](tooling/execution-model-findings.md).
+
+| Model | Mean Score | Output Style |
+|-------|-----------|-------------|
+| Sonnet 4.6 | **4.51** | Concise (3-4K lines) |
+| GLM 4.7 | 3.82 | Verbose (9-14K lines) |
+| **Gap** | **0.69** | |
+
+**The execution model gap (0.69) is 2-3x larger than the best-to-worst agent instruction gap (0.29).** Switching models matters more than perfecting prompts.
+
+Why GLM 4.7 scores lower:
+- **Verbosity breeds errors** — 2-4x more output creates more surface area for false positives and must_not violations
+- **Precision collapses** — SQL injection false positives on parameterized queries, incorrect HTTPS claims, suggesting removal of CI safety flags
+- **Efficiency tanks** — provides 3-5 "solutions" per task where 1-2 targeted answers suffice
+
+Agent instruction recommendations differ by model:
+- **For Sonnet:** compact agents (v4/v5, 71 lines) work best — the model doesn't need hand-holding
+- **For GLM 4.7:** agent-creator round 1 output is the most robust; verbose v1 instructions don't help as expected
+
+### Agent Invocability
+
+Models don't always use the agents they're given. Self-reported invocability scores (0-5) revealed:
+- **No model spawned subprocess agents** — all applied agent .md files as inline instructions
+- **Sonnet sometimes refused to use agents entirely** (scored 0/5 invocability despite having them) and still performed well
+- **Higher invocability doesn't predict quality** — GLM 4.7 was more compliant with agent instructions (avg 2.8/5) but produced worse output than Sonnet (avg 1.6/5)
+- **Light touch outperforms heavy compliance** — the GLM 4.7 session with lowest invocability (2/5) scored best in its group
+
+See [invocability findings](tooling/invocability-findings.md).
 
 ### [CLAUDE.md Guide](tooling/claude-md-guide.md)
 
@@ -222,26 +253,30 @@ Maintenance: review when stack, commands, or architecture change. Quarterly audi
 
 ```
 tooling/
-  agent-description-guide.md    # Full agent description guide with evidence
-  claude-md-guide.md            # Full CLAUDE.md guide with evidence
-  template-agent-description.md # Agent description template
-  template-claude-md.md         # CLAUDE.md template
-  agent_eval.md                 # Evaluation framework
-  agent_v1_v2_findings.md       # v1-v5 evaluation findings
-  prompt-research-synthesis.md  # External prompt engineering research
-  research-agent-chokepoints.md # Research agent limitations
+  agent-description-guide.md       # Full agent description guide with evidence
+  claude-md-guide.md               # Full CLAUDE.md guide with evidence
+  template-agent-description.md    # Agent description template
+  template-claude-md.md            # CLAUDE.md template
+  agent_eval.md                    # Evaluation framework
+  agent_v1_v2_findings.md          # v1-v5 evaluation findings
+  prompt-research-synthesis.md     # External prompt engineering research
+  execution-model-findings.md      # Sonnet 4.6 vs GLM 4.7 comparison
+  invocability-findings.md         # Agent invocation behavior analysis
+  agent-creator-iteration-findings.md  # Plugin iteration loop findings
+  anthropic-official-plugins-analysis.md  # Official plugin analysis
+  research-agent-chokepoints.md    # Research agent limitations
   full-stack-developer-research.md
-  per_agent_research/           # Per-agent research (initial)
-  per_agent_research_v2/        # Per-agent deep research (dedicated searches)
+  per_agent_research/              # Per-agent research (initial)
+  per_agent_research_v2/           # Per-agent deep research (12 agents)
 
-agents_v1 thru v5/             # Agent description versions
-bench/                         # Evaluation tasks and scoreboards
-  tasks/                       # Ground-truth task YAMLs
-  eval_abc/                    # Opus evaluation
-  eval_def/                    # Sonnet report-only evaluation
-  eval_def_full/               # Sonnet full evaluation (with code artifacts)
-  defg_eval/                   # v3 evaluation
-  eval_defghij/                # v5 evaluation (final)
+agents_v1 thru v5/                 # Agent description versions
+bench/                             # Evaluation tasks and scoreboards
+  tasks/                           # Ground-truth task YAMLs
+  eval_ab12345/                    # Sonnet vs GLM 4.7 comparison
+  eval_defilmno/                   # Agent-creator iteration evaluation
+  eval_defghij/                    # v5 evaluation
+  defg_eval/                       # v3/v4 evaluation
+  eval_def_full/                   # Sonnet full evaluation (with code artifacts)
 ```
 
 ## Essential Reading
