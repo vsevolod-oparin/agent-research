@@ -198,9 +198,19 @@ The test: remove the line, run the same task. Did anything change? If no, the li
 
 API endpoint patterns, database schema guidance, migration procedures — these belong in `.claude/rules/` scoped to the relevant paths, or in knowledge files loaded on demand.
 
+### DON'T include one-off fixes
+
+```
+Bad:  "We fixed a bug in commit abc123 where the login button didn't work."
+```
+
+Won't recur. Clutters the file. (Source: Anthropic's claude-md-management update-guidelines.md)
+
 ### DON'T let it go stale
 
 A stale CLAUDE.md is worse than no CLAUDE.md. "A CLAUDE.md written for Express that was later migrated to Fastify actively misleads the agent." If your stack, commands, or architecture change, update CLAUDE.md immediately.
+
+Use `/revise-claude-md` (from the `claude-md-management` plugin) at end of sessions to capture learnings automatically. This creates a flywheel: encounter gotcha → capture it → prevent it next session.
 
 ### DON'T include step-by-step workflows
 

@@ -250,6 +250,10 @@ Start with the official Claude Code documentation: **https://code.claude.com/doc
 
 Several of our key findings originate from or are confirmed by Anthropic's official guidance — particularly the CLAUDE.md best practices ("would removing this cause mistakes?"), the 4.6 proactive behavior change (don't add "be thorough"), and the verification quality multiplier. Read the docs first, then use this research to go deeper.
 
+Also see these official Anthropic plugins (installable via `/plugin`):
+- **[skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator)** — Contains Anthropic's internal philosophy on writing effective instructions: "explain the why", "keep prompts lean", "avoid heavy-handed MUSTs", eval-driven iteration loops. Confirms our core findings. See [our analysis](tooling/anthropic-official-plugins-analysis.md).
+- **[claude-md-management](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management)** — CLAUDE.md quality auditing (6-dimension rubric) and session-learning capture (`/revise-claude-md`). The quality rubric and update guidelines align closely with our CLAUDE.md guide.
+
 ## Meta-Lesson
 
 > The instruction set that works best adds knowledge the model lacks, prevents mistakes the model makes, and stays out of the model's way for everything else.
